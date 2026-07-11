@@ -1,0 +1,56 @@
+{
+  "name": "tying a knot",
+  "description": "Interactive coaching course for tying a knot compiled in real-time from webcam footage.",
+  "category": "Heritage Crafts",
+  "version": "1.0.0",
+  "steps": [
+    {
+      "index": 1,
+      "name": "Preparing and Aligning the Cord",
+      "description": "Hold the cord firmly with both hands, stretching it out to inspect its length and ensure there are no pre-existing tangles or knots before starting.",
+      "voice_guideline": null,
+      "illustrative_image_prompt": null,
+      "checklist": [
+        {
+          "id": "step_1_check",
+          "title": null,
+          "description": "The cord should be held taut and straight between both hands without any twists.",
+          "verified": false,
+          "confidence_threshold": 0.8
+        }
+      ],
+      "failure_conditions": [
+        {
+          "id": "step_1_fail",
+          "trigger_description": "Holding the cord too loosely, which can cause it to slip or tangle prematurely.",
+          "mitigation_instruction": "Maintain a firm but gentle grip on both ends of the cord to keep it straight and controlled.",
+          "severity": "WARNING"
+        }
+      ]
+    },
+    {
+      "index": 2,
+      "name": "Forming the Initial Loop",
+      "description": "Cross one end of the cord over the main body to form a clear, circular loop, holding the intersection firmly between your thumb and index finger.",
+      "voice_guideline": null,
+      "illustrative_image_prompt": null,
+      "checklist": [
+        {
+          "id": "step_2_check",
+          "title": null,
+          "description": "Verify that a stable, open loop is formed with the crossing point securely held in place.",
+          "verified": false,
+          "confidence_threshold": 0.8
+        }
+      ],
+      "failure_conditions": [
+        {
+          "id": "step_2_fail",
+          "trigger_description": "The loop is too small or the crossing point slips, causing the loop to collapse.",
+          "mitigation_instruction": "Ensure you leave at least 3 to 4 inches of working end beyond the crossing point and pinch the intersection firmly to prevent slipping.",
+          "severity": "WARNING"
+        }
+      ]
+    }
+  ]
+}

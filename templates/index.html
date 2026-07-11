@@ -193,26 +193,38 @@
                 </div>
             </div>
 
-            <!-- Right Side: Webcam Vision Loop -->
+            <!-- Right Side: Webcam Vision Loop & Step reference side-by-side -->
             <div class="interface-feed">
-                <div class="camera-display" id="cam-view-box" style="position: relative;">
-                    <div class="camera-overlay" style="z-index: 10;">
-                        <div class="copilot-pill">🤖 AI Visual Co-Pilot Active</div>
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1.5rem; width: 100%;">
+                    
+                    <!-- Left Panel: Live Webcam Stream Viewfinder -->
+                    <div class="camera-display" id="cam-view-box" style="position: relative; aspect-ratio: 4/3; width: 100%;">
+                        <div class="camera-overlay" style="z-index: 10;">
+                            <div class="copilot-pill">📷 Live Webcam Stream</div>
+                        </div>
+                        
+                        <div class="camera-placeholder-text" id="cam-placeholder" style="z-index: 2;">
+                            <div class="cam-icon">🎥</div>
+                            <h3>Webcam Alignment Target</h3>
+                            <p id="cam-status">Position your hands inside the camera frame</p>
+                        </div>
                     </div>
                     
-                    <!-- HUD Augmented Reality Alignment Overlay (Vivid vector guidelines super-imposed) -->
-                    <div id="step-visual-guide-container" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 5; opacity: 0.85; pointer-events: none; display: flex; align-items: center; justify-content: center; filter: drop-shadow(0 0 10px rgba(0, 242, 254, 0.6));">
-                        <!-- Vector Drawings will be injected here on the fly -->
+                    <!-- Right Panel: Goal/Step Visual Reference Guide -->
+                    <div class="camera-display" id="step-ref-box" style="position: relative; aspect-ratio: 4/3; width: 100%;">
+                        <div class="camera-overlay" style="z-index: 10;">
+                            <div class="copilot-pill" style="border-color: var(--primary); color: var(--primary);">🎯 Step Guide Blueprint</div>
+                        </div>
+                        
+                        <!-- HUD Augmented Reality Alignment Overlay (Vivid photorealistic step image + guidelines) -->
+                        <div id="step-visual-guide-container" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 5; opacity: 1.0; display: flex; align-items: center; justify-content: center; filter: drop-shadow(0 0 10px rgba(197, 168, 128, 0.4)); background-size: cover; background-position: center; border-radius: var(--border-radius-md); overflow: hidden;">
+                            <!-- Vector Drawings will be injected here on the fly -->
+                        </div>
+                        
+                        <!-- HUD Caption Overlay at the bottom center of the reference container -->
+                        <p id="step-visual-guide-caption" style="position: absolute; bottom: 0.75rem; left: 50%; transform: translateX(-50%); z-index: 10; font-size: 0.75rem; color: #f1c40f; font-weight: 700; text-shadow: 0 2px 4px rgba(0,0,0,0.9); background: rgba(15, 23, 42, 0.85); padding: 0.35rem 0.85rem; border-radius: 99px; border: 1px solid rgba(255, 255, 255, 0.15); text-align: center; white-space: nowrap; font-family: 'Outfit', sans-serif; letter-spacing: 0.02em; margin: 0; display: none;"></p>
                     </div>
                     
-                    <!-- HUD Caption Overlay at the bottom center of the camera container -->
-                    <p id="step-visual-guide-caption" style="position: absolute; bottom: 0.75rem; left: 50%; transform: translateX(-50%); z-index: 10; font-size: 0.75rem; color: #f1c40f; font-weight: 700; text-shadow: 0 2px 4px rgba(0,0,0,0.9); background: rgba(15, 23, 42, 0.85); padding: 0.35rem 0.85rem; border-radius: 99px; border: 1px solid rgba(255, 255, 255, 0.15); text-align: center; white-space: nowrap; font-family: 'Outfit', sans-serif; letter-spacing: 0.02em; margin: 0; display: none;"></p>
-
-                    <div class="camera-placeholder-text" id="cam-placeholder" style="z-index: 2;">
-                        <div class="cam-icon">🎥</div>
-                        <h3>Webcam Alignment Target</h3>
-                        <p id="cam-status">Position your hands inside the camera frame</p>
-                    </div>
                 </div>
 
 
