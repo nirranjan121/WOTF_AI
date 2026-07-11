@@ -151,19 +151,16 @@
                     </div>
                 </div>
 
-                <!-- Interactive Step Illustration Card (Gemini GenMedia Co-pilot) -->
-                <div class="glass-panel illustration-card" style="margin-top: 1.5rem; padding: 1.25rem; border-radius: 16px; border: 1px solid rgba(255, 255, 255, 0.08); background: rgba(15, 23, 42, 0.45); box-shadow: 0 4px 30px rgba(0, 0, 0, 0.4); backdrop-filter: blur(10px);">
-                    <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 0.75rem;">
-                        <h4 style="margin: 0; font-family: 'Outfit', sans-serif; color: var(--accent-cyan); font-size: 0.9rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; display: flex; align-items: center; gap: 0.5rem;">
-                            <span>🎨</span> Step Visual Guide
-                        </h4>
-                        <span style="font-size: 0.75rem; color: #64748b; font-family: 'Outfit', sans-serif;">gemini-3.1-flash-lite-image</span>
+                <!-- Interactive Progressive Module Stepper Card -->
+                <div class="glass-panel steps-progress-card" style="margin-top: 1.5rem; padding: 1.25rem; border-radius: 16px; border: 1px solid rgba(255, 255, 255, 0.08); background: rgba(15, 23, 42, 0.45); box-shadow: 0 4px 30px rgba(0, 0, 0, 0.4); backdrop-filter: blur(10px);">
+                    <h4 style="margin: 0 0 1rem 0; font-family: 'Outfit', sans-serif; color: var(--accent-cyan); font-size: 0.9rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; display: flex; align-items: center; gap: 0.5rem;">
+                        <span>📈</span> Module Steps Progress
+                    </h4>
+                    <div id="steps-stepper-container" style="display: flex; flex-direction: column; gap: 0.75rem;">
+                        <!-- Progressive steps stepper injected here on the fly -->
                     </div>
-                    <div id="step-visual-guide-container" style="width: 100%; height: 160px; border-radius: 12px; background: rgba(0, 0, 0, 0.35); border: 1px solid rgba(255, 255, 255, 0.05); display: flex; align-items: center; justify-content: center; overflow: hidden; position: relative;">
-                        <!-- Vector Drawings will be injected here on the fly -->
-                    </div>
-                    <p id="step-visual-guide-caption" style="font-size: 0.8rem; color: #94a3b8; font-style: italic; margin: 0.5rem 0 0 0; text-align: center;"></p>
                 </div>
+
 
                 <!-- Animated Interactive "Nano Banana" Companion Coach -->
                 <div class="glass-panel nano-banana-card" style="margin-top: 1.5rem; text-align: center; padding: 1.25rem; position: relative; overflow: hidden; border-radius: 16px;">
@@ -198,16 +195,26 @@
 
             <!-- Right Side: Webcam Vision Loop -->
             <div class="interface-feed">
-                <div class="camera-display" id="cam-view-box">
-                    <div class="camera-overlay">
+                <div class="camera-display" id="cam-view-box" style="position: relative;">
+                    <div class="camera-overlay" style="z-index: 10;">
                         <div class="copilot-pill">🤖 AI Visual Co-Pilot Active</div>
                     </div>
-                    <div class="camera-placeholder-text" id="cam-placeholder">
+                    
+                    <!-- HUD Augmented Reality Alignment Overlay (Semi-transparent vector guidelines super-imposed) -->
+                    <div id="step-visual-guide-container" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 5; opacity: 0.40; pointer-events: none; display: flex; align-items: center; justify-content: center; mix-blend-mode: screen; filter: drop-shadow(0 0 8px rgba(0, 242, 254, 0.4));">
+                        <!-- Vector Drawings will be injected here on the fly -->
+                    </div>
+                    
+                    <!-- HUD Caption Overlay at the bottom center of the camera container -->
+                    <p id="step-visual-guide-caption" style="position: absolute; bottom: 0.75rem; left: 50%; transform: translateX(-50%); z-index: 10; font-size: 0.75rem; color: #f1c40f; font-weight: 700; text-shadow: 0 2px 4px rgba(0,0,0,0.9); background: rgba(15, 23, 42, 0.85); padding: 0.35rem 0.85rem; border-radius: 99px; border: 1px solid rgba(255, 255, 255, 0.15); text-align: center; white-space: nowrap; font-family: 'Outfit', sans-serif; letter-spacing: 0.02em; margin: 0; display: none;"></p>
+
+                    <div class="camera-placeholder-text" id="cam-placeholder" style="z-index: 2;">
                         <div class="cam-icon">🎥</div>
                         <h3>Webcam Alignment Target</h3>
                         <p id="cam-status">Position your hands inside the camera frame</p>
                     </div>
                 </div>
+
 
                 <div class="coaching-controls-panel" style="display: flex; gap: 1rem; margin-top: 0.5rem; width: 100%;">
                     <button class="action-trigger-btn cta-btn" onclick="captureLiveFrame()" id="capture-btn" style="flex: 1; margin: 0;">
@@ -414,7 +421,59 @@
             // Update on-the-fly step illustration
             const skillName = document.getElementById('session-skill-name').innerText || "";
             updateStepVisualGuide(step, skillName);
+
+            // Update progressive steps stepper list
+            renderStepsProgress();
         }
+
+        // Render full course step progress list with green ticks for completed tasks and active highlights
+        function renderStepsProgress() {
+            const container = document.getElementById('steps-stepper-container');
+            if (!container) return;
+            container.innerHTML = '';
+
+            activeStepsData.forEach(step => {
+                const isCompleted = step.index < currentStepIndex;
+                const isActive = step.index === currentStepIndex;
+                
+                const stepItem = document.createElement('div');
+                stepItem.style.display = 'flex';
+                stepItem.style.alignItems = 'center';
+                stepItem.style.gap = '0.75rem';
+                stepItem.style.padding = '0.6rem 0.8rem';
+                stepItem.style.borderRadius = '10px';
+                stepItem.style.transition = 'all 0.3s ease';
+
+                if (isCompleted) {
+                    stepItem.style.background = 'rgba(16, 185, 129, 0.08)';
+                    stepItem.style.border = '1px solid rgba(16, 185, 129, 0.15)';
+                    stepItem.style.opacity = '0.85';
+                    stepItem.innerHTML = `
+                        <div style="width: 20px; height: 20px; border-radius: 50%; background: #10b981; color: white; display: flex; align-items: center; justify-content: center; font-size: 0.75rem; font-weight: bold; box-shadow: 0 2px 8px rgba(16, 185, 129, 0.3);">✓</div>
+                        <div style="flex: 1; font-size: 0.85rem; color: #a7f3d0; font-weight: 500; text-decoration: line-through;">${step.name}</div>
+                    `;
+                } else if (isActive) {
+                    stepItem.style.background = 'rgba(59, 130, 246, 0.15)';
+                    stepItem.style.border = '1px solid rgba(59, 130, 246, 0.4)';
+                    stepItem.style.boxShadow = '0 0 12px rgba(59, 130, 246, 0.15)';
+                    stepItem.style.transform = 'scale(1.02)';
+                    stepItem.innerHTML = `
+                        <div style="width: 20px; height: 20px; border-radius: 50%; background: #3b82f6; color: white; display: flex; align-items: center; justify-content: center; font-size: 0.75rem; font-weight: bold; box-shadow: 0 2px 8px rgba(59, 130, 246, 0.4);">➔</div>
+                        <div style="flex: 1; font-size: 0.85rem; color: #f8fafc; font-weight: 700;">${step.name} <span style="font-size: 0.60rem; background: #3b82f6; color: white; padding: 0.1rem 0.4rem; border-radius: 4px; margin-left: 0.5rem; text-transform: uppercase; font-weight: 800; letter-spacing: 0.02em;">Next Task</span></div>
+                    `;
+                } else {
+                    stepItem.style.background = 'rgba(255, 255, 255, 0.02)';
+                    stepItem.style.border = '1px solid rgba(255, 255, 255, 0.04)';
+                    stepItem.style.opacity = '0.5';
+                    stepItem.innerHTML = `
+                        <div style="width: 20px; height: 20px; border-radius: 50%; border: 1px solid rgba(255, 255, 255, 0.2); display: flex; align-items: center; justify-content: center; font-size: 0.75rem; color: #64748b; font-weight: bold;">${step.index}</div>
+                        <div style="flex: 1; font-size: 0.85rem; color: #94a3b8; font-weight: 500;">${step.name}</div>
+                    `;
+                }
+                container.appendChild(stepItem);
+            });
+        }
+
 
         function updateStepVisualGuide(step, protocolName) {
             const container = document.getElementById('step-visual-guide-container');
@@ -534,7 +593,9 @@
             container.innerHTML = svgContent;
             translateTextIfNeeded(captionText).then(trans => {
                 caption.innerText = `💡 "${trans}"`;
+                caption.style.display = 'block'; // Ensure HUD floating caption is active and visible
             });
+
         }
 
 
