@@ -1,0 +1,1341 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kushal.ai — Heritage Skills Co-Pilot</title>
+    <!-- Premium Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/static/css/style.css">
+</head>
+<body>
+    <div class="dashboard-container">
+        <!-- Premium Navigation Header -->
+        <header>
+            <div class="brand">
+                <div class="brand-logo">🏺</div>
+                <div>
+                    <h1>Kushal<span class="dot">.ai</span></h1>
+                    <p class="tagline">Empowering Artisans • Preserving Heritage</p>
+                </div>
+            </div>
+            <div class="nav-tabs">
+                <button class="tab-btn active" onclick="switchTab('curriculum')" id="tab-btn-curriculum">🏺 Explore Crafts</button>
+                <button class="tab-btn" onclick="switchTab('synthesis')" id="tab-btn-synthesis">📹 Digitize a Craft</button>
+                <button class="tab-btn" id="coaching-tab-btn" onclick="switchTab('coaching')" style="display: none;">🎯 Live Coach</button>
+                
+                <!-- Floating Settings Cog for Presenter Controls -->
+                <button class="cog-btn" onclick="togglePresenterDrawer()" title="Presenter Options">⚙️</button>
+            </div>
+        </header>
+
+        <!-- Tab 1: Explore Heritage Crafts Catalog -->
+        <main id="curriculum-tab" class="tab-content active">
+            <!-- Hero Introduction Section -->
+            <div class="hero-banner">
+                <div class="hero-text">
+                    <h2>Master the Arts of Our Heritage</h2>
+                    <p>Select a dynamic skill module below. Kushal AI uses real-time vision algorithms and spoken local audio to coach you step-by-step with zero reading required.</p>
+                </div>
+                <div class="hero-badge">🇮🇳 Digital India Vocational Initiative</div>
+            </div>
+            
+            <!-- Dynamic Cards Container -->
+            <div class="crafts-grid" id="skills-catalog-grid">
+                <!-- Dynamic cards will render here -->
+            </div>
+        </main>
+
+        <!-- Tab 2: Digitize a Craft (Phase 1) -->
+        <main id="synthesis-tab" class="tab-content">
+            <div class="glass-panel main-digitizer-panel">
+                <div class="panel-badge">LIVE CRAFT PRESERVATION</div>
+                <h2 class="section-title">Preserve a Craft Heritage Live</h2>
+                <p class="section-desc">
+                    No uploading required! Everything happens live. Stand in front of your webcam, perform each step milestone, and click "Snap Step Milestone". Kushal AI's cognitive agents analyze your stream live and compile the course on-the-fly.
+                </p>
+
+                <!-- Initial Setup Form -->
+                <div id="digitize-setup-section">
+                    <div class="input-group">
+                        <label for="synth-name">Craft Name <span class="input-sublabel">(e.g., Banarasi Silk Weaving, Terracotta Pot Wedging)</span></label>
+                        <input type="text" id="synth-name" placeholder="Enter craft name here...">
+                    </div>
+                    <button class="action-trigger-btn" onclick="startLiveDigitizingSession()" id="start-digitize-btn">
+                        🏺 Begin Live Digitizing Session
+                    </button>
+                </div>
+
+                <!-- Active Recording Stream (Hidden by Default) -->
+                <div id="digitize-active-section" style="display: none; flex-direction: column; gap: 1.5rem;">
+                    <div class="camera-display" id="digitize-cam-view" style="aspect-ratio: 4/3; max-height: 380px;">
+                        <div class="camera-overlay">
+                            <span class="active-badge" style="background: rgba(244, 63, 94, 0.15); border-color: rgba(244, 63, 94, 0.4); color: var(--accent-rose); animation: pulse 2s infinite;">🔴 LIVE AGENTS WATCHING</span>
+                        </div>
+                        <div class="camera-placeholder-text" id="digitize-cam-placeholder">
+                            <div class="cam-icon">🎥</div>
+                            <h3>Expert Digitize Stream</h3>
+                            <p>Align your hands or tools in the lens, then snap milestones</p>
+                        </div>
+                    </div>
+                    
+                    <!-- Live Spoken Audio Captioning box -->
+                    <div id="live-transcript-display" style="padding: 0.75rem 1rem; background: rgba(255,255,255,0.04); border-radius: var(--radius-md); font-size: 0.85rem; border: 1px solid rgba(255,255,255,0.08); color: var(--text-secondary); text-align: left; min-height: 40px; line-height: 1.4;">
+                        🎤 <i>Live Spoken Explanations:</i> (Awaiting audio input...)
+                    </div>
+                    
+                    <div style="display: flex; gap: 1rem;">
+                        <button class="action-trigger-btn cta-btn" onclick="snapDigitizeStep()" id="digitize-snap-btn" style="flex: 1.5;">
+                            📸 Force Step Snap
+                        </button>
+                        <button class="action-trigger-btn" onclick="finalizeDigitizeSession()" id="digitize-finalize-btn" style="flex: 1; background: var(--accent-emerald);">
+                            🛑 Complete & Save Course
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Beautiful Tech Drawer (Collapsible) -->
+            <div class="glass-panel tech-spec-panel">
+                <div class="panel-header-toggle" onclick="toggleTechSpec()">
+                    <h3>📋 Real-Time Compiled Course Steps</h3>
+                    <span class="toggle-icon" id="tech-toggle-icon">＋</span>
+                </div>
+                <div class="collapsible-tech-content" id="tech-spec-content">
+                    <p class="section-desc">Kushal AI translates your live stream actions into structured steps, visual checklists, and failure conditions on-the-fly.</p>
+                    <div class="terminal-output" id="synth-json-display">
+                        // Waiting to start live webcam session...
+                    </div>
+                </div>
+            </div>
+        </main>
+
+        <!-- Tab 3: Live Coaching Session Workspace (Phase 2) -->
+        <main id="coaching-tab" class="tab-content">
+            <!-- Left Side: Interactive Guidance -->
+            <div class="glass-panel coach-guidance">
+                <div class="workspace-header">
+                    <div>
+                        <span class="active-badge">Active Session</span>
+                        <h2 class="skill-session-name" id="session-skill-name">Hand Spinning</h2>
+                    </div>
+                    <div style="display: flex; align-items: center; gap: 0.5rem;">
+                        <select id="coaching-lang-selector" class="lang-selector-select" onchange="changeCoachingLanguage(this.value)">
+                            <option value="en">🇬🇧 English</option>
+                            <!-- Indian Regional Languages (antigravity-preview-05-2026 Interactions API) -->
+                            <option value="hi">🇮🇳 Hindi (हिंदी)</option>
+                            <option value="ta">🇮🇳 Tamil (தமிழ்)</option>
+                            <option value="te">🇮🇳 Telugu (తెలుగు)</option>
+                            <option value="kn">🇮🇳 Kannada (ಕನ್ನಡ)</option>
+                            <option value="ml">🇮🇳 Malayalam (മലയാളം)</option>
+                            <option value="mr">🇮🇳 Marathi (मराठी)</option>
+                            <option value="bn">🇮🇳 Bengali (বাংলা)</option>
+                            <option value="gu">🇮🇳 Gujarati (ગુજરાતી)</option>
+                            <!-- Foreign Languages -->
+                            <option value="es">🇪🇸 Spanish (Español)</option>
+                            <option value="fr">🇫🇷 French (Français)</option>
+                        </select>
+                        <span class="step-tracker-pill" id="session-step-pill">Step 1 of 4</span>
+                    </div>
+                </div>
+
+                <div class="step-details">
+                    <h3 class="step-title" id="session-step-name">📍 Feed Thread Into Wheel</h3>
+                    <p class="step-desc" id="session-step-desc">Position cotton on spindle tip. Start slow rotation clockwise.</p>
+                </div>
+
+                <div class="checkpoints-card">
+                    <h3 class="checkpoints-header">🎯 Visual Checkpoints Required</h3>
+                    <div id="checkpoints-list-container">
+                        <!-- Dynamic Checkpoints rendering -->
+                    </div>
+                </div>
+
+                <!-- Interactive Step Illustration Card (Gemini GenMedia Co-pilot) -->
+                <div class="glass-panel illustration-card" style="margin-top: 1.5rem; padding: 1.25rem; border-radius: 16px; border: 1px solid rgba(255, 255, 255, 0.08); background: rgba(15, 23, 42, 0.45); box-shadow: 0 4px 30px rgba(0, 0, 0, 0.4); backdrop-filter: blur(10px);">
+                    <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 0.75rem;">
+                        <h4 style="margin: 0; font-family: 'Outfit', sans-serif; color: var(--accent-cyan); font-size: 0.9rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; display: flex; align-items: center; gap: 0.5rem;">
+                            <span>🎨</span> Step Visual Guide
+                        </h4>
+                        <span style="font-size: 0.75rem; color: #64748b; font-family: 'Outfit', sans-serif;">gemini-3.1-flash-lite-image</span>
+                    </div>
+                    <div id="step-visual-guide-container" style="width: 100%; height: 160px; border-radius: 12px; background: rgba(0, 0, 0, 0.35); border: 1px solid rgba(255, 255, 255, 0.05); display: flex; align-items: center; justify-content: center; overflow: hidden; position: relative;">
+                        <!-- Vector Drawings will be injected here on the fly -->
+                    </div>
+                    <p id="step-visual-guide-caption" style="font-size: 0.8rem; color: #94a3b8; font-style: italic; margin: 0.5rem 0 0 0; text-align: center;"></p>
+                </div>
+
+                <!-- Animated Interactive "Nano Banana" Companion Coach -->
+                <div class="glass-panel nano-banana-card" style="margin-top: 1.5rem; text-align: center; padding: 1.25rem; position: relative; overflow: hidden; border-radius: 16px;">
+                    <div class="banana-glow-bg"></div>
+                    <div class="nano-banana-avatar-container">
+                        <svg class="nano-banana-svg active-bouncing" id="nano-banana-svg" viewBox="0 0 100 100" style="width: 75px; height: 75px;">
+                            <!-- Yellow Banana Body curve -->
+                            <path d="M20,60 C 25,25 65,25 80,45 C 75,55 55,70 20,60 Z" fill="#FEE12B" stroke="#F5B041" stroke-width="2"/>
+                            <!-- Stem -->
+                            <path d="M78,43 C 81,41 85,38 88,40" stroke="#7D6608" stroke-width="4" stroke-linecap="round"/>
+                            <!-- Cute eyes -->
+                            <circle cx="45" cy="42" r="4.5" fill="#1B2631" class="banana-eye" id="banana-eye-left"/>
+                            <circle cx="58" cy="45" r="4.5" fill="#1B2631" class="banana-eye" id="banana-eye-right"/>
+                            <!-- Blush cheeks -->
+                            <ellipse cx="40" cy="48" rx="3.5" ry="1.8" fill="#F1948A" opacity="0.85"/>
+                            <ellipse cx="63" cy="51" rx="3.5" ry="1.8" fill="#F1948A" opacity="0.85"/>
+                            <!-- Smile path -->
+                            <path d="M47,51 Q 52,56 57,52" stroke="#1B2631" stroke-width="2.5" fill="none" stroke-linecap="round" id="banana-mouth"/>
+                            <!-- Cute arms -->
+                            <path d="M33,40 Q 25,32 18,35" stroke="#1B2631" stroke-width="2" fill="none" stroke-linecap="round" class="banana-arm" id="banana-arm-left"/>
+                            <path d="M68,44 Q 75,38 81,42" stroke="#1B2631" stroke-width="2" fill="none" stroke-linecap="round" class="banana-arm" id="banana-arm-right"/>
+                        </svg>
+                    </div>
+                    <h4 style="margin: 0.5rem 0 0.25rem 0; font-family: 'Outfit', sans-serif; color: #f1c40f; display: flex; align-items: center; justify-content: center; gap: 0.5rem; font-size: 1rem;">
+                        <span>🍌</span> Nano Banana Co-Pilot
+                    </h4>
+                    <p class="nano-banana-bubble" id="nano-banana-bubble" style="font-size: 0.8rem; margin: 0; color: #b2bec3; font-style: italic; line-height: 1.4;">
+                        "Let's learn this together! Position your hand clearly."
+                    </p>
+                </div>
+            </div>
+
+            <!-- Right Side: Webcam Vision Loop -->
+            <div class="interface-feed">
+                <div class="camera-display" id="cam-view-box">
+                    <div class="camera-overlay">
+                        <div class="copilot-pill">🤖 AI Visual Co-Pilot Active</div>
+                    </div>
+                    <div class="camera-placeholder-text" id="cam-placeholder">
+                        <div class="cam-icon">🎥</div>
+                        <h3>Webcam Alignment Target</h3>
+                        <p id="cam-status">Position your hands inside the camera frame</p>
+                    </div>
+                </div>
+
+                <div class="coaching-controls-panel" style="display: flex; gap: 1rem; margin-top: 0.5rem; width: 100%;">
+                    <button class="action-trigger-btn cta-btn" onclick="captureLiveFrame()" id="capture-btn" style="flex: 1; margin: 0;">
+                        📷 Snap & Verify Frame
+                    </button>
+                    <button class="action-trigger-btn" onclick="toggleLiveCoaching()" id="live-coaching-toggle-btn" style="flex: 1; margin: 0; background: linear-gradient(135deg, #e74c3c, #c0392b); color: white; border: none; border-radius: var(--border-radius-md); font-weight: 800; font-size: 0.9rem; cursor: pointer; box-shadow: 0 4px 15px rgba(231, 76, 60, 0.25); display: flex; align-items: center; justify-content: center; gap: 0.5rem; transition: all 0.3s ease;">
+                        <span>🔴</span> Start Real-Time Coaching
+                    </button>
+                </div>
+
+                <!-- Verbal Speech Audio Indicator -->
+                <div class="speech-bubble" id="tts-bubble">
+                    <span class="audio-wave">🔊</span> Live verbal guide loading...
+                </div>
+
+                <!-- Emergency Banner Overlay -->
+                <div class="safety-alert-overlay" id="safety-alert">
+                    <div class="alert-icon">🚨</div>
+                    <div>
+                        <div class="alert-title" id="alert-title-text">SAFETY BREACH</div>
+                        <div class="alert-message" id="alert-desc-text">Warning detail goes here</div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Hidden Drawer for Presenter / Demo Controls (Perfect for Pitch Decks) -->
+    <div class="presenter-drawer" id="presenter-drawer">
+        <div class="drawer-header">
+            <h4>⚙️ Presenter Demonstration Switchboard</h4>
+            <button class="close-drawer-btn" onclick="togglePresenterDrawer()">×</button>
+        </div>
+        <p class="drawer-desc">Simulate camera inputs instantly during live 3-minute pitch presentations without needing a physical setup.</p>
+        
+        <div class="mock-toggle-row">
+            <label for="mock-mode-checkbox">Enable Pitch Simulation Mode</label>
+            <input type="checkbox" id="mock-mode-checkbox" onchange="toggleMockMode()">
+        </div>
+
+        <div id="mock-panel-controls" class="mock-controls" style="display: none;">
+            <button class="mock-btn danger" onclick="injectMockEvent(true)">⚠️ Simulate Failure</button>
+            <button class="mock-btn success" onclick="injectMockEvent(false)">✅ Simulate Success</button>
+        </div>
+    </div>
+
+    <!-- Front-end Scripts -->
+    <script>
+        let currentSkillFile = "";
+        let mockModeActive = false;
+        let mockFailureInjected = false;
+        let activeStepsData = [];
+        let currentStepIndex = 1;
+        let activeVerifiedIds = [];
+
+        // Dynamic Loading of Available Skills in Catalog
+        async function loadSkillsCatalog() {
+            try {
+                const response = await fetch('/api/skills');
+                const skills = await response.json();
+                
+                const catalogContainer = document.getElementById('skills-catalog-grid');
+                catalogContainer.innerHTML = '';
+
+                skills.forEach(skill => {
+                    const card = document.createElement('div');
+                    const randomArt = Math.floor(Math.random() * 3) + 1;
+                    card.className = 'glass-panel craft-card';
+                    card.innerHTML = `
+                        <div class="card-art-accent art-bg-${randomArt}"></div>
+                        <div class="card-header">
+                            <span class="category-badge">${skill.category}</span>
+                            <span class="steps-indicator">🎯 ${skill.steps_count} Steps</span>
+                        </div>
+                        <div class="card-body">
+                            <h3>${skill.name}</h3>
+                            <p>${skill.description}</p>
+                        </div>
+                        <div class="card-footer">
+                            <button class="start-btn" onclick="startTrainingSession('${skill.filename}')">Launch Module 🎯</button>
+                        </div>
+                    `;
+                    catalogContainer.appendChild(card);
+                });
+            } catch (err) {
+                console.error("Failed to load skills catalog: ", err);
+            }
+        }
+
+        // Start dynamic coaching session
+        // Start dynamic coaching session
+        async function startTrainingSession(filename) {
+            currentSkillFile = filename;
+            try {
+                primeSpeechSynthesis();
+                
+                const response = await fetch('/api/start', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ filename })
+                });
+                const session = await response.json();
+                
+                if (session.error) {
+                    alert(session.error);
+                    return;
+                }
+
+                // Setup Workspace UI
+                document.getElementById('session-skill-name').innerText = session.protocol_name;
+                activeStepsData = session.steps;
+                currentStepIndex = session.current_step_idx;
+                activeVerifiedIds = session.verified_item_ids || [];
+
+                // Reset step announcement index
+                lastAnnouncedStepIndex = 0;
+
+                // Render Active Steps
+                renderCurrentStep();
+                
+                // Show tab
+                document.getElementById('coaching-tab-btn').style.display = 'block';
+                switchTab('coaching');
+
+                // Primed speech transition
+                setTimeout(() => {
+                    announceStepGuideline(currentStepIndex);
+                }, 800);
+
+            } catch (err) {
+                console.error(err);
+                alert("Could not load coaching session.");
+            }
+        }
+
+
+        // Render current step checklists
+        let lastAnnouncedStepIndex = 0;
+        
+        // Priming speech synthesis to bypass modern browser autoplay blocks
+        function primeSpeechSynthesis() {
+            if ('speechSynthesis' in window) {
+                const utterance = new SpeechSynthesisUtterance("");
+                window.speechSynthesis.speak(utterance);
+            }
+        }
+
+        async function announceStepGuideline(stepIndex) {
+            if (stepIndex === lastAnnouncedStepIndex) return; // Prevent repeating step introduction!
+            lastAnnouncedStepIndex = stepIndex;
+
+            const step = activeStepsData[stepIndex - 1];
+            if (!step) return;
+
+            const voiceText = step.voice_guideline || step.description;
+            speakTTS(voiceText);
+            
+            // Translate for display bubble
+            const translatedMsg = await translateTextIfNeeded(voiceText);
+            document.getElementById('tts-bubble').innerHTML = `<span class="audio-wave">🔊</span> ${translatedMsg}`;
+        }
+
+        // Render current step checklists
+        function renderCurrentStep() {
+            const step = activeStepsData[currentStepIndex - 1];
+            if (!step) return;
+
+            document.getElementById('session-step-pill').innerText = `Step ${step.index} of ${activeStepsData.length}`;
+            document.getElementById('session-step-name').innerText = `📍 ${step.name}`;
+            document.getElementById('session-step-desc').innerText = step.description;
+
+            // Render checklists
+            const container = document.getElementById('checkpoints-list-container');
+            container.innerHTML = '';
+
+            step.checklist.forEach(item => {
+                const isVerified = activeVerifiedIds.includes(item.id);
+                const title = item.title || item.id.toUpperCase().replace(/_/g, ' ') || 'Checkpoint';
+                const desc = item.description || '';
+                const checkItem = document.createElement('div');
+                checkItem.className = `checkpoint-item ${isVerified ? 'verified' : ''}`;
+                checkItem.innerHTML = `
+                    <div class="check-circle">${isVerified ? '✓' : '○'}</div>
+                    <div>
+                        <div class="check-title">${title}</div>
+                        <div class="check-desc">${desc}</div>
+                    </div>
+                `;
+                container.appendChild(checkItem);
+            });
+
+            // Update on-the-fly step illustration
+            const skillName = document.getElementById('session-skill-name').innerText || "";
+            updateStepVisualGuide(step, skillName);
+        }
+
+        function updateStepVisualGuide(step, protocolName) {
+            const container = document.getElementById('step-visual-guide-container');
+            const caption = document.getElementById('step-visual-guide-caption');
+            if (!container || !caption) return;
+
+            const idx = step.index;
+            const name = (protocolName || "").toLowerCase();
+            let svgContent = "";
+            let captionText = step.illustrative_image_prompt || step.description;
+
+            if (name.includes("algebra")) {
+                if (idx === 1) {
+                    svgContent = `
+                    <svg viewBox="0 0 100 100" style="width: 100%; height: 100%; max-height: 140px;">
+                        <rect x="10" y="20" width="80" height="60" rx="6" fill="#1e293b" stroke="#475569" stroke-width="3" />
+                        <rect x="5" y="78" width="90" height="6" rx="2" fill="#854d0e" />
+                        <text x="50" y="55" font-family="'Outfit', sans-serif" font-size="12" fill="#f8fafc" text-anchor="middle" font-weight="bold">(a + b)²</text>
+                    </svg>`;
+                } else if (idx === 2) {
+                    svgContent = `
+                    <svg viewBox="0 0 100 100" style="width: 100%; height: 100%; max-height: 140px;">
+                        <rect x="10" y="20" width="80" height="60" rx="6" fill="#1e293b" stroke="#475569" stroke-width="3" />
+                        <rect x="5" y="78" width="90" height="6" rx="2" fill="#854d0e" />
+                        <text x="50" y="45" font-family="'Outfit', sans-serif" font-size="10" fill="#94a3b8" text-anchor="middle">(a + b)²</text>
+                        <text x="50" y="62" font-family="'Outfit', sans-serif" font-size="11" fill="#f8fafc" text-anchor="middle" font-weight="bold">(a + b)(a + b)</text>
+                    </svg>`;
+                } else if (idx === 3) {
+                    svgContent = `
+                    <svg viewBox="0 0 100 100" style="width: 100%; height: 100%; max-height: 140px;">
+                        <rect x="10" y="20" width="80" height="60" rx="6" fill="#1e293b" stroke="#475569" stroke-width="3" />
+                        <rect x="5" y="78" width="90" height="6" rx="2" fill="#854d0e" />
+                        <!-- FOIL lines -->
+                        <path d="M30,42 Q 50,30 70,42" stroke="#f59e0b" stroke-width="1.5" fill="none" stroke-dasharray="2,2"/>
+                        <path d="M30,55 Q 50,68 70,55" stroke="#10b981" stroke-width="1.5" fill="none" stroke-dasharray="2,2"/>
+                        <text x="50" y="55" font-family="'Outfit', sans-serif" font-size="8" fill="#e2e8f0" text-anchor="middle" font-weight="bold">a² + ab + ba + b²</text>
+                    </svg>`;
+                } else {
+                    svgContent = `
+                    <svg viewBox="0 0 100 100" style="width: 100%; height: 100%; max-height: 140px;">
+                        <rect x="10" y="20" width="80" height="60" rx="6" fill="#1e293b" stroke="#3b82f6" stroke-width="4" />
+                        <rect x="5" y="78" width="90" height="6" rx="2" fill="#854d0e" />
+                        <!-- Star -->
+                        <polygon points="50,28 53,35 60,35 55,39 57,46 50,42 43,46 45,39 40,35 47,35" fill="#f59e0b" />
+                        <text x="50" y="58" font-family="'Outfit', sans-serif" font-size="11" fill="#60a5fa" text-anchor="middle" font-weight="bold">a² + 2ab + b²</text>
+                    </svg>`;
+                }
+            } else if (name.includes("knot") || name.includes("bowline")) {
+                if (idx === 1) {
+                    svgContent = `
+                    <svg viewBox="0 0 100 100" style="width: 100%; height: 100%; max-height: 140px;">
+                        <path d="M 50,20 C 30,20 30,60 50,60 C 70,60 70,20 50,20" fill="none" stroke="#2563eb" stroke-width="5" stroke-linecap="round"/>
+                        <path d="M 50,60 L 50,90" fill="none" stroke="#1d4ed8" stroke-width="5" stroke-dasharray="2,2"/>
+                        <text x="50" y="52" font-family="'Outfit', sans-serif" font-size="8" fill="#f8fafc" text-anchor="middle" font-weight="bold">Eye</text>
+                    </svg>`;
+                } else if (idx === 2) {
+                    svgContent = `
+                    <svg viewBox="0 0 100 100" style="width: 100%; height: 100%; max-height: 140px;">
+                        <path d="M 50,30 C 30,30 30,70 50,70 C 70,70 70,30 50,30" fill="none" stroke="#2563eb" stroke-width="5"/>
+                        <path d="M 50,85 L 50,45" fill="none" stroke="#f59e0b" stroke-width="3" stroke-linecap="round"/>
+                        <polygon points="50,40 46,48 54,40 50,40" fill="#f59e0b" />
+                    </svg>`;
+                } else if (idx === 3) {
+                    svgContent = `
+                    <svg viewBox="0 0 100 100" style="width: 100%; height: 100%; max-height: 140px;">
+                        <line x1="30" y1="10" x2="30" y2="90" stroke="#78350f" stroke-width="8" stroke-linecap="round"/>
+                        <path d="M 15,45 Q 30,30 65,45" fill="none" stroke="#2563eb" stroke-width="5" stroke-linecap="round"/>
+                        <path d="M 30,45 Q 30,30 30,90" fill="none" stroke="#1d4ed8" stroke-width="5" />
+                    </svg>`;
+                } else {
+                    svgContent = `
+                    <svg viewBox="0 0 100 100" style="width: 100%; height: 100%; max-height: 140px;">
+                        <path d="M 40,40 C 35,20 65,20 60,40 C 55,60 25,50 50,70" fill="none" stroke="#10b981" stroke-width="6" stroke-linecap="round"/>
+                    </svg>`;
+                }
+            } else if (name.includes("solder") || name.includes("wire")) {
+                if (idx === 1) {
+                    svgContent = `
+                    <svg viewBox="0 0 100 100" style="width: 100%; height: 100%; max-height: 140px;">
+                        <rect x="5" y="45" width="35" height="10" fill="#ef4444" rx="2" />
+                        <rect x="60" y="45" width="35" height="10" fill="#3b82f6" rx="2" />
+                        <path d="M 40,50 L 60,50" stroke="#b45309" stroke-width="5" stroke-linecap="round" stroke-dasharray="3,1" />
+                    </svg>`;
+                } else if (idx === 2) {
+                    svgContent = `
+                    <svg viewBox="0 0 100 100" style="width: 100%; height: 100%; max-height: 140px;">
+                        <line x1="20" y1="50" x2="80" y2="50" stroke="#b45309" stroke-width="4" />
+                        <polygon points="40,80 50,55 60,80" fill="#94a3b8" />
+                        <rect x="47" y="80" width="6" height="20" fill="#475569" />
+                        <path d="M 35,45 Q 40,40 45,45" fill="none" stroke="#ef4444" stroke-width="1" />
+                    </svg>`;
+                } else if (idx === 3) {
+                    svgContent = `
+                    <svg viewBox="0 0 100 100" style="width: 100%; height: 100%; max-height: 140px;">
+                        <line x1="20" y1="50" x2="80" y2="50" stroke="#b45309" stroke-width="4" />
+                        <line x1="50" y1="15" x2="50" y2="48" stroke="#cbd5e1" stroke-width="3" stroke-linecap="round" />
+                        <polygon points="35,80 45,55 55,80" fill="#94a3b8" />
+                        <circle cx="50" cy="50" r="6" fill="#cbd5e1" opacity="0.85" />
+                    </svg>`;
+                } else {
+                    svgContent = `
+                    <svg viewBox="0 0 100 100" style="width: 100%; height: 100%; max-height: 140px;">
+                        <rect x="15" y="47" width="70" height="6" fill="#cbd5e1" rx="3" stroke="#94a3b8" stroke-width="1" />
+                        <polygon points="30,30 32,35 37,35 33,38 35,43 30,40 25,43 27,38 23,35 28,35" fill="#e2e8f0" />
+                    </svg>`;
+                }
+            } else {
+                svgContent = `
+                <svg viewBox="0 0 100 100" style="width: 100%; height: 100%; max-height: 140px;">
+                    <circle cx="50" cy="35" r="12" fill="#fef08a" stroke="#facc15" stroke-width="2" />
+                    <path d="M25,80 C 30,55 60,55 70,68 C 65,75 50,85 25,80 Z" fill="#FEE12B" />
+                    <circle cx="42" cy="68" r="2" fill="#1B2631" />
+                    <circle cx="52" cy="70" r="2" fill="#1B2631" />
+                </svg>`;
+            }
+
+            container.innerHTML = svgContent;
+            translateTextIfNeeded(captionText).then(trans => {
+                caption.innerText = `💡 "${trans}"`;
+            });
+        }
+
+
+        // Global variables for Phase 2 continuous loop
+        let currentLanguage = 'en';
+        let liveCoachingIntervalId = null;
+        let coachingSpeechRecognition = null;
+
+        // Translation utility via backend Gemini
+        async function translateTextIfNeeded(text) {
+            if (currentLanguage === 'en' || !text) {
+                return text;
+            }
+            try {
+                const response = await fetch('/api/translate', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        text: text,
+                        target_lang: currentLanguage
+                    })
+                });
+                const res = await response.json();
+                return res.translated_text || text;
+            } catch (err) {
+                console.error("Translation request failed: ", err);
+                return text;
+            }
+        }
+
+        // Animated Nano Banana state updates
+        function updateNanoBananaState(stateName, rationaleText) {
+            const svg = document.getElementById('nano-banana-svg');
+            const mouth = document.getElementById('banana-mouth');
+            const bubble = document.getElementById('nano-banana-bubble');
+            
+            if (!svg || !mouth || !bubble) return;
+            
+            svg.classList.remove('active-bouncing', 'worry-shaking', 'dance-spinning');
+            
+            if (stateName === "RETRY_NEEDED" || stateName === "WARNING") {
+                svg.classList.add('worry-shaking');
+                mouth.setAttribute('d', 'M48,55 Q 52,50 56,54'); // Sad mouth
+                
+                translateTextIfNeeded(rationaleText || "Oops! Adjust your alignment, let's fix it!").then(trans => {
+                    bubble.innerHTML = `⚠️ <span style="color: #f1c40f; font-weight: 500;">"${trans}"</span>`;
+                });
+            } else if (stateName === "COMPLETED") {
+                svg.classList.add('dance-spinning');
+                mouth.setAttribute('d', 'M45,50 Q 52,60 59,50'); // Wide smiling mouth
+                
+                translateTextIfNeeded("You've mastered this skill! Amazing!").then(trans => {
+                    bubble.innerHTML = `🏆 <span style="color: #2ecc71; font-weight: 600;">"${trans}"</span>`;
+                });
+            } else {
+                svg.classList.add('active-bouncing');
+                mouth.setAttribute('d', 'M47,51 Q 52,56 57,52'); // Normal happy smile mouth
+                
+                translateTextIfNeeded(rationaleText || "Doing great! Keep your work visible in the frame.").then(trans => {
+                    bubble.innerHTML = `🍌 <span>"${trans}"</span>`;
+                });
+            }
+        }
+
+        // Change target coaching language
+        async function changeCoachingLanguage(lang) {
+            if (currentLanguage === lang) return;
+            currentLanguage = lang;
+            
+            const selectEl = document.getElementById('coaching-lang-selector');
+            if (selectEl) selectEl.value = lang;
+
+            const langNames = {
+                'en': 'English',
+                'hi': 'Hindi',
+                'ta': 'Tamil',
+                'te': 'Telugu',
+                'kn': 'Kannada',
+                'ml': 'Malayalam',
+                'mr': 'Marathi',
+                'bn': 'Bengali',
+                'gu': 'Gujarati',
+                'es': 'Spanish',
+                'fr': 'French'
+            };
+            const confirmMsg = `Language switched to ${langNames[lang] || lang}.`;
+            const translatedConfirm = await translateTextIfNeeded(confirmMsg);
+            
+            speakTTS(translatedConfirm);
+            renderCurrentStep();
+        }
+
+        // Voice activated coaching commands (Interactions API antigravity-preview-05-2026)
+        function startCoachingVoiceCommands() {
+            if ('webkitSpeechRecognition' in window || 'SpeechRecognition' in window) {
+                const SpeechRec = window.SpeechRecognition || window.webkitSpeechRecognition;
+                coachingSpeechRecognition = new SpeechRec();
+                coachingSpeechRecognition.continuous = true;
+                coachingSpeechRecognition.interimResults = true;
+                coachingSpeechRecognition.lang = 'en-IN';
+
+                coachingSpeechRecognition.onresult = (event) => {
+                    let transcript = "";
+                    for (let i = event.resultIndex; i < event.results.length; ++i) {
+                        if (event.results[i].isFinal) {
+                            transcript += event.results[i][0].transcript.toLowerCase();
+                        }
+                    }
+                    if (transcript) {
+                        console.log("Coaching speech heard: ", transcript);
+                        if (transcript.includes("speak in hindi") || transcript.includes("translate to hindi") || transcript.includes("हिंदी")) {
+                            changeCoachingLanguage('hi');
+                        } else if (transcript.includes("speak in tamil") || transcript.includes("translate to tamil") || transcript.includes("தமிழ்")) {
+                            changeCoachingLanguage('ta');
+                        } else if (transcript.includes("speak in telugu") || transcript.includes("translate to telugu") || transcript.includes("తెలుగు")) {
+                            changeCoachingLanguage('te');
+                        } else if (transcript.includes("speak in kannada") || transcript.includes("translate to kannada") || transcript.includes("ಕನ್ನಡ")) {
+                            changeCoachingLanguage('kn');
+                        } else if (transcript.includes("speak in malayalam") || transcript.includes("translate to malayalam") || transcript.includes("മലയാളം")) {
+                            changeCoachingLanguage('ml');
+                        } else if (transcript.includes("speak in marathi") || transcript.includes("translate to marathi") || transcript.includes("मराठी")) {
+                            changeCoachingLanguage('mr');
+                        } else if (transcript.includes("speak in bengali") || transcript.includes("translate to bengali") || transcript.includes("বাংলা")) {
+                            changeCoachingLanguage('bn');
+                        } else if (transcript.includes("speak in gujarati") || transcript.includes("translate to gujarati") || transcript.includes("ગુજરાતી")) {
+                            changeCoachingLanguage('gu');
+                        } else if (transcript.includes("speak in spanish") || transcript.includes("translate to spanish") || transcript.includes("español")) {
+                            changeCoachingLanguage('es');
+                        } else if (transcript.includes("speak in french") || transcript.includes("translate to french") || transcript.includes("français")) {
+                            changeCoachingLanguage('fr');
+                        } else if (transcript.includes("speak in english") || transcript.includes("translate to english") || transcript.includes("english")) {
+                            changeCoachingLanguage('en');
+                        }
+                    }
+                };
+
+                coachingSpeechRecognition.onerror = (err) => {
+                    console.warn("Coaching voice recognition error:", err.error);
+                };
+
+                coachingSpeechRecognition.onend = () => {
+                    if (liveCoachingIntervalId) {
+                        try { coachingSpeechRecognition.start(); } catch(e) {}
+                    }
+                };
+
+                try { coachingSpeechRecognition.start(); } catch(e) {}
+            }
+        }
+
+        function stopCoachingVoiceCommands() {
+            if (coachingSpeechRecognition) {
+                coachingSpeechRecognition.onend = null;
+                coachingSpeechRecognition.stop();
+                coachingSpeechRecognition = null;
+            }
+        }
+
+        // Toggle Continuous Hands-Free Coaching Interval
+        function toggleLiveCoaching() {
+            primeSpeechSynthesis();
+            const btn = document.getElementById('live-coaching-toggle-btn');
+            const camView = document.getElementById('cam-view-box');
+
+            if (liveCoachingIntervalId) {
+                clearInterval(liveCoachingIntervalId);
+                liveCoachingIntervalId = null;
+                camView.classList.remove('coaching-active');
+                btn.innerHTML = `<span>🔴</span> Start Real-Time Coaching`;
+                btn.style.background = 'linear-gradient(135deg, #e74c3c, #c0392b)';
+                btn.style.boxShadow = '0 4px 15px rgba(231, 76, 60, 0.25)';
+                stopCoachingVoiceCommands();
+                speakTTS("Coaching loop paused.");
+            } else {
+                camView.classList.add('coaching-active');
+                btn.innerHTML = `<span>⏸️</span> Pause Real-Time Coaching`;
+                btn.style.background = 'linear-gradient(135deg, #f39c12, #d35400)';
+                btn.style.boxShadow = '0 4px 15px rgba(243, 156, 18, 0.25)';
+                
+                speakTTS("Real-time coaching active. Hands-free visual checks enabled.");
+                captureLiveFrame();
+                liveCoachingIntervalId = setInterval(captureLiveFrame, 7000);
+                startCoachingVoiceCommands();
+            }
+        }
+
+
+        // Snap Live Frame from Webcam
+        async function captureLiveFrame() {
+            const btn = document.getElementById('capture-btn');
+            const placeholder = document.getElementById('cam-placeholder');
+            const alertBox = document.getElementById('safety-alert');
+            
+            btn.disabled = true;
+            btn.innerText = "🌀 Analyzing Visuals...";
+            
+            const frameB64 = captureFrameFromVideo('coaching-video-stream');
+            if (!frameB64) {
+                placeholder.style.display = 'flex';
+                placeholder.innerHTML = `<div class="spinner"></div><h3>Evaluating Work alignment</h3><p>Connecting to AI Co-pilot...</p>`;
+            }
+            alertBox.className = "safety-alert-overlay"; 
+
+            try {
+                const response = await fetch('/api/capture', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        use_mock: mockModeActive,
+                        frame_b64: frameB64
+                    })
+                });
+                const result = await response.json();
+
+                if (result.error) {
+                    console.error("Coaching analysis failed: ", result.error);
+                    if (!frameB64) resetCamPlaceholder();
+                    return;
+                }
+
+                const translatedRationale = await translateTextIfNeeded(result.rationale);
+                document.getElementById('tts-bubble').innerHTML = `<span class="audio-wave">🔊</span> ${translatedRationale}`;
+
+                // Gather combined real-time feedback
+                let feedbackText = "";
+                if (result.tts_feedback && result.tts_feedback.length > 0) {
+                    feedbackText = result.tts_feedback.join(". ");
+                }
+
+                // Verbally speak feedback, falling back to rationale
+                const speakMsg = feedbackText || result.rationale;
+                speakTTS(speakMsg);
+
+                // Update Nano Banana avatar expression
+                updateNanoBananaState(result.engine_state, result.rationale);
+
+                // Update verified checkpoints
+                activeVerifiedIds = result.verified_item_ids || [];
+                renderCurrentStep();
+
+                // Handle RETRY / warning displays
+                if (result.engine_state === "RETRY_NEEDED") {
+                    alertBox.className = "safety-alert-overlay triggered";
+                    document.getElementById('alert-desc-text').innerText = translatedRationale;
+                } else {
+                    alertBox.className = "safety-alert-overlay";
+                }
+
+                // If step is completed, handle next transitions
+                if (result.engine_state === "COMPLETED") {
+                    speakTTS("Brilliant! You have successfully mastered this entire craft module. Excellent work!");
+                    updateNanoBananaState("COMPLETED", "Fantastic! You are certified!");
+                    alert("🏆 Module Completed Successfully!");
+                    
+                    // Pause loop
+                    if (liveCoachingIntervalId) toggleLiveCoaching();
+                    switchTab('curriculum');
+                    return;
+                }
+
+                // If step index advanced
+                if (result.current_step_idx > currentStepIndex) {
+                    currentStepIndex = result.current_step_idx;
+                    speakTTS("Checking your visual alignment. Checklist satisfied! Moving onto the next step.");
+                    renderCurrentStep();
+                    setTimeout(() => {
+                        announceStepGuideline(currentStepIndex);
+                    }, 2500);
+                }
+
+
+                if (!frameB64) resetCamPlaceholder();
+
+            } catch (err) {
+                console.error(err);
+                if (!frameB64) resetCamPlaceholder();
+            } finally {
+                btn.disabled = false;
+                btn.innerText = "📷 Snap & Verify Frame";
+            }
+        }
+
+        function resetCamPlaceholder() {
+            document.getElementById('cam-placeholder').innerHTML = `
+                <div class="cam-icon">📸</div>
+                <h3>Webcam Alignment Target</h3>
+                <p id="cam-status">Position your hands inside the camera frame</p>
+            `;
+        }
+
+        // ==========================================
+        // 📹 LIVE WEBCAM DIGITIZATION (PHASE 1)
+        // ==========================================
+        let digitizeIntervalTimer = null;
+        let speechRecognition = null;
+        let latestSpokenTranscript = "";
+
+        function startSpeechRecognition() {
+            latestSpokenTranscript = "";
+            const transcriptBox = document.getElementById('live-transcript-display');
+            
+            if ('webkitSpeechRecognition' in window || 'SpeechRecognition' in window) {
+                const SpeechRec = window.SpeechRecognition || window.webkitSpeechRecognition;
+                speechRecognition = new SpeechRec();
+                speechRecognition.continuous = true;
+                speechRecognition.interimResults = true;
+                speechRecognition.lang = 'en-IN'; // Standard regional Indian accent English
+
+                speechRecognition.onresult = (event) => {
+                    let interim = "";
+                    let finalChunk = "";
+                    for (let i = event.resultIndex; i < event.results.length; ++i) {
+                        if (event.results[i].isFinal) {
+                            finalChunk += event.results[i][0].transcript + " ";
+                        } else {
+                            interim += event.results[i][0].transcript;
+                        }
+                    }
+                    if (finalChunk) {
+                        latestSpokenTranscript += finalChunk;
+                    }
+                    transcriptBox.innerHTML = `🎤 <i>Live Spoken Explanations:</i> <span style="color: var(--accent-rose); font-weight: 500;">${latestSpokenTranscript}</span> <span style="color: var(--text-secondary); opacity: 0.6;">${interim}</span>`;
+                };
+
+                speechRecognition.onerror = (err) => {
+                    console.warn("Speech recognition error/warning:", err.error);
+                };
+
+                speechRecognition.onend = () => {
+                    // Auto-restart stream if active session is still showing
+                    if (document.getElementById('digitize-active-section').style.display === 'flex' && speechRecognition) {
+                        try { speechRecognition.start(); } catch(e) {}
+                    }
+                };
+
+                try {
+                    speechRecognition.start();
+                } catch(e) {
+                    console.error("Speech Recognition starting failed:", e);
+                }
+            } else {
+                transcriptBox.innerHTML = `⚠️ <i>Live Spoken Explanations:</i> Speech recognition is not supported by your browser. We will use visuals only.`;
+            }
+        }
+
+        function stopSpeechAndInterval() {
+            if (digitizeIntervalTimer) {
+                clearInterval(digitizeIntervalTimer);
+                digitizeIntervalTimer = null;
+            }
+            if (speechRecognition) {
+                speechRecognition.onend = null;
+                try { speechRecognition.stop(); } catch(e) {}
+                speechRecognition = null;
+            }
+            latestSpokenTranscript = "";
+        }
+
+        async function startLiveDigitizingSession() {
+            const nameInput = document.getElementById('synth-name');
+            const craftName = nameInput.value.trim();
+
+            if (!nameInput.value.trim()) {
+                alert("Please enter a name for the craft heritage you want to preserve live.");
+                return;
+            }
+
+            try {
+                const response = await fetch('/api/digitize_start', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ skill_name: craftName })
+                });
+                const result = await response.json();
+
+                if (result.error) {
+                    alert(result.error);
+                    return;
+                }
+
+                // Toggle UI Sections
+                document.getElementById('digitize-setup-section').style.display = 'none';
+                document.getElementById('digitize-active-section').style.display = 'flex';
+                
+                // Clear display
+                document.getElementById('synth-json-display').innerText = `// Live digitization session active: ${result.name}\n// Position your hands in front of the webcam. Automatic agents are observing live...`;
+                
+                // Expand Spec Tray
+                document.getElementById('tech-spec-content').classList.add('expanded');
+                document.getElementById('tech-toggle-icon').innerText = "－";
+
+                // Initialize webcam stream
+                await initWebcam('digitize-video-stream', 'digitize-cam-placeholder');
+
+                // Start browser-native speech recognition
+                startSpeechRecognition();
+
+                // Trigger continuous agent evaluation every 10 seconds (10000ms)
+                digitizeIntervalTimer = setInterval(async () => {
+                    const frameB64 = captureFrameFromVideo('digitize-video-stream');
+                    const transcriptToSend = latestSpokenTranscript.trim();
+                    latestSpokenTranscript = ""; // Clear for next interval chunk
+
+                    try {
+                        const chunkResponse = await fetch('/api/digitize_stream_chunk', {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({
+                                frame_b64: frameB64,
+                                transcript: transcriptToSend
+                            })
+                        });
+                        const chunkResult = await chunkResponse.json();
+
+                        if (chunkResult.new_step_added) {
+                            const newStep = chunkResult.step;
+                            document.getElementById('synth-json-display').innerText = JSON.stringify(chunkResult.protocol, null, 2);
+                            speakTTS(`Step ${newStep.index} compiled automatically. Title: ${newStep.name}.`);
+                        }
+                    } catch(e) {
+                        console.error("Streaming agent evaluation failed:", e);
+                    }
+                }, 10000);
+
+                speakTTS(`Live digitization session started for ${result.name}. Just perform your skills and talk out loud to describe each milestone. Real-time cognitive agents will analyze your live feed automatically.`);
+
+            } catch (err) {
+                console.error(err);
+                alert("Could not start digitization session.");
+            }
+        }
+
+        async function snapDigitizeStep() {
+            const snapBtn = document.getElementById('digitize-snap-btn');
+            const placeholder = document.getElementById('digitize-cam-placeholder');
+            const synthDisplay = document.getElementById('synth-json-display');
+
+            snapBtn.disabled = true;
+            snapBtn.innerText = "🌀 Capturing & Analyzing...";
+            
+            const frameB64 = captureFrameFromVideo('digitize-video-stream');
+            if (!frameB64) {
+                placeholder.style.display = 'flex';
+                placeholder.innerHTML = `<div class="spinner"></div><h3>Analyzing Live Frame</h3><p>Compiling visual checklist criteria...</p>`;
+            }
+
+            try {
+                const response = await fetch('/api/digitize_snap', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ frame_b64: frameB64 })
+                });
+                const result = await response.json();
+
+                if (result.error) {
+                    alert(`Snapshot analysis failed: ${result.error}`);
+                    return;
+                }
+
+                // Update real-time display
+                synthDisplay.innerText = JSON.stringify(result.protocol, null, 2);
+                
+                // Speak synthesized success
+                const newestStep = result.step;
+                speakTTS(`Step ${newestStep.index} compiled manually! Title: ${newestStep.name}.`);
+
+            } catch (err) {
+                console.error(err);
+                alert("Error connecting to server.");
+            } finally {
+                snapBtn.disabled = false;
+                snapBtn.innerText = "📸 Force Step Snap";
+                if (!frameB64) {
+                    placeholder.style.display = 'flex';
+                    placeholder.innerHTML = `
+                        <div class="cam-icon">🎥</div>
+                        <h3>Expert Digitize Stream</h3>
+                        <p>Align your hands or tools in the lens, then snap milestones</p>
+                    `;
+                }
+            }
+        }
+
+        async function finalizeDigitizeSession() {
+            const finalizeBtn = document.getElementById('digitize-finalize-btn');
+            
+            finalizeBtn.disabled = true;
+            finalizeBtn.innerText = "🌀 Publishing Course...";
+
+            // Stop background speech recognition and streaming timer immediately
+            stopSpeechAndInterval();
+
+            try {
+                const response = await fetch('/api/digitize_finalize', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({})
+                });
+                const result = await response.json();
+
+                if (result.error) {
+                    alert(result.error);
+                    return;
+                }
+
+                alert(`🏆 Dynamic course for "${result.protocol.name}" published successfully to the heritage catalog!`);
+                speakTTS(`Digitization complete. Your new course has been successfully published to the catalog.`);
+
+                // Reset digitize UI
+                document.getElementById('synth-name').value = '';
+                document.getElementById('digitize-setup-section').style.display = 'block';
+                document.getElementById('digitize-active-section').style.display = 'none';
+                document.getElementById('synth-json-display').innerText = `// Waiting to start live webcam session...`;
+
+                // Collapsed tray
+                document.getElementById('tech-spec-content').classList.remove('expanded');
+                document.getElementById('tech-toggle-icon').innerText = "＋";
+
+                // Stop webcam
+                stopWebcam();
+
+                // Refresh catalog list
+                loadSkillsCatalog();
+                
+                // Return to explore tab
+                switchTab('curriculum');
+
+            } catch (err) {
+                console.error(err);
+                alert("Error saving protocol.");
+            } finally {
+                finalizeBtn.disabled = false;
+                finalizeBtn.innerText = "🛑 Complete & Save Course";
+            }
+        }
+
+        // ==========================================
+        // 📷 BROWSER WEBCAM STREAM CONTROLLER
+        // ==========================================
+        let activeStream = null;
+
+        async function initWebcam(videoElementId, placeholderId) {
+            stopWebcam();
+            const placeholder = document.getElementById(placeholderId);
+            try {
+                activeStream = await navigator.mediaDevices.getUserMedia({
+                    video: { width: 640, height: 480, facingMode: "environment" },
+                    audio: false
+                });
+                
+                let video = document.getElementById(videoElementId);
+                if (!video) {
+                    video = document.createElement('video');
+                    video.id = videoElementId;
+                    video.autoplay = true;
+                    video.playsInline = true;
+                    video.muted = true;
+                    video.style.width = '100%';
+                    video.style.height = '100%';
+                    video.style.objectFit = 'cover';
+                    video.style.borderRadius = 'var(--radius-lg)';
+                    
+                    const parent = placeholder.parentNode;
+                    parent.insertBefore(video, placeholder);
+                }
+                
+                video.srcObject = activeStream;
+                video.style.display = 'block';
+                placeholder.style.display = 'none';
+                return true;
+            } catch (err) {
+                console.warn("Front-end webcam stream blocked or failed, using local snapshot fallback:", err);
+                placeholder.innerHTML = `
+                    <div class="cam-icon">⚠️</div>
+                    <h3>Camera Blocked or Missing</h3>
+                    <p>Grant camera permissions in your browser or we will fallback to backend snapshot capture.</p>
+                `;
+                return false;
+            }
+        }
+
+        function stopWebcam() {
+            if (activeStream) {
+                activeStream.getTracks().forEach(track => track.stop());
+                activeStream = null;
+            }
+            
+            // Hide any video elements
+            ['coaching-video-stream', 'digitize-video-stream'].forEach(id => {
+                const el = document.getElementById(id);
+                if (el) el.style.display = 'none';
+            });
+            // Restore placeholders
+            const p1 = document.getElementById('cam-placeholder');
+            if (p1) p1.style.display = 'flex';
+            const p2 = document.getElementById('digitize-cam-placeholder');
+            if (p2) p2.style.display = 'flex';
+        }
+
+        function captureFrameFromVideo(videoElementId) {
+            const video = document.getElementById(videoElementId);
+            if (!video || !video.srcObject || video.style.display === 'none') return null;
+            
+            const canvas = document.createElement('canvas');
+            canvas.width = video.videoWidth || 640;
+            canvas.height = video.videoHeight || 480;
+            const ctx = canvas.getContext('2d');
+            ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+            
+            try {
+                const dataUrl = canvas.toDataURL('image/jpeg', 0.85);
+                return dataUrl.split(',')[1];
+            } catch (e) {
+                console.error("Failed to capture frame canvas:", e);
+                return null;
+            }
+        }
+
+        // Utility Methods
+        function switchTab(tabId) {
+            document.querySelectorAll('.tab-content').forEach(tab => tab.classList.remove('active'));
+            document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+
+            document.getElementById(`${tabId}-tab`).classList.add('active');
+            
+            // Map tab button focus and control webcam streams dynamically
+            if (tabId === 'curriculum') {
+                document.getElementById('tab-btn-curriculum').classList.add('active');
+                stopWebcam();
+            }
+            if (tabId === 'synthesis') {
+                document.getElementById('tab-btn-synthesis').classList.add('active');
+                if (document.getElementById('digitize-active-section').style.display === 'flex') {
+                    initWebcam('digitize-video-stream', 'digitize-cam-placeholder');
+                } else {
+                    stopWebcam();
+                }
+            }
+            if (tabId === 'coaching') {
+                document.getElementById('coaching-tab-btn').classList.add('active');
+                initWebcam('coaching-video-stream', 'cam-placeholder');
+            }
+        }
+
+        function toggleTechSpec() {
+            const content = document.getElementById('tech-spec-content');
+            const icon = document.getElementById('tech-toggle-icon');
+            if (content.classList.contains('expanded')) {
+                content.classList.remove('expanded');
+                icon.innerText = "＋";
+            } else {
+                content.classList.add('expanded');
+                icon.innerText = "－";
+            }
+        }
+
+        function togglePresenterDrawer() {
+            const drawer = document.getElementById('presenter-drawer');
+            drawer.classList.toggle('active');
+        }
+
+        function toggleMockMode() {
+            mockModeActive = document.getElementById('mock-mode-checkbox').checked;
+            document.getElementById('mock-panel-controls').style.display = mockModeActive ? 'flex' : 'none';
+        }
+
+        function updateFileLabel(input) {
+            const label = document.getElementById('file-selected-label');
+            if (input.files.length > 0) {
+                label.innerText = `📎 Selected: ${input.files[0].name} (${(input.files[0].size/1024/1024).toFixed(1)}MB)`;
+            } else {
+                label.innerText = '';
+            }
+        }
+
+        async function injectMockEvent(isFailure) {
+            const step = activeStepsData[currentStepIndex - 1];
+            if (!step) return;
+
+            let mockDetections = [];
+            let mockRationale = "";
+
+            if (isFailure) {
+                const failure = step.failure_conditions[0];
+                if (!failure) return;
+                mockDetections.push({ type: "failure", id: failure.id, confidence: 0.98 });
+                mockRationale = `Identified active safety breach: ${failure.trigger_description}`;
+                
+                // Show Emergency Overlay
+                const alertBox = document.getElementById('safety-alert');
+                alertBox.className = "safety-alert-overlay triggered";
+                document.getElementById('alert-title-text').innerText = `${failure.severity} SAFETY BREACH`;
+                document.getElementById('alert-desc-text').innerText = failure.mitigation_instruction;
+                
+                speakTTS(`Safety Alert: ${failure.mitigation_instruction}`);
+            } else {
+                step.checklist.forEach(item => {
+                    mockDetections.push({ type: "checklist", id: item.id, confidence: 0.96 });
+                });
+                mockRationale = `Visual verification successful. All checkpoints for Step ${step.index} match perfectly!`;
+                document.getElementById('safety-alert').className = "safety-alert-overlay"; // Hide if shown
+            }
+
+            const btn = document.getElementById('capture-btn');
+            btn.disabled = true;
+            btn.innerText = "🌀 Simulating Visual AI Checks...";
+
+            try {
+                const response = await fetch('/api/capture', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        use_mock: true,
+                        mock_detections: mockDetections,
+                        mock_rationale: mockRationale
+                    })
+                });
+                const result = await response.json();
+
+                const translatedRationale = await translateTextIfNeeded(result.rationale);
+                document.getElementById('tts-bubble').innerHTML = `<span class="audio-wave">🔊</span> ${translatedRationale}`;
+
+                // Gather combined real-time feedback
+                let feedbackText = "";
+                if (result.tts_feedback && result.tts_feedback.length > 0) {
+                    feedbackText = result.tts_feedback.join(". ");
+                }
+
+                const speakMsg = feedbackText || result.rationale;
+                speakTTS(speakMsg);
+
+                // Update Nano Banana avatar expression
+                updateNanoBananaState(result.engine_state, result.rationale);
+
+                activeVerifiedIds = result.verified_item_ids || [];
+                renderCurrentStep();
+
+                if (result.engine_state === "COMPLETED") {
+                    speakTTS("Brilliant! You have successfully mastered this entire craft module. Excellent work!");
+                    updateNanoBananaState("COMPLETED", "Fantastic! You are certified!");
+                    alert("🏆 Module Completed Successfully!");
+                    switchTab('curriculum');
+                    return;
+                }
+
+                if (result.current_step_idx > currentStepIndex) {
+                    currentStepIndex = result.current_step_idx;
+                    speakTTS("Checking your visual alignment. Checklist satisfied! Moving onto the next step.");
+                    renderCurrentStep();
+                    setTimeout(() => {
+                        announceStepGuideline(currentStepIndex);
+                    }, 2500);
+                }
+
+
+            } catch (err) {
+                console.error(err);
+            } finally {
+                btn.disabled = false;
+                btn.innerText = "📷 Snap and Verify Frame";
+            }
+        }
+
+        // Web Speech synthesis with dynamic translation and accent voice matching
+        async function speakTTS(text) {
+            if (!text) return;
+            
+            // Auto-translate if user selected a localized vernacular language
+            let textToSpeak = text;
+            if (currentLanguage !== 'en') {
+                textToSpeak = await translateTextIfNeeded(text);
+            }
+
+            if ('speechSynthesis' in window) {
+                window.speechSynthesis.cancel();
+                const utterance = new SpeechSynthesisUtterance(textToSpeak);
+                
+                // Set the accent voice according to current selection (Interactions API / SpeechSynthesis locale mappings)
+                const langLocales = {
+                    'en': 'en-IN',
+                    'hi': 'hi-IN',
+                    'ta': 'ta-IN',
+                    'te': 'te-IN',
+                    'kn': 'kn-IN',
+                    'ml': 'ml-IN',
+                    'mr': 'mr-IN',
+                    'bn': 'bn-IN',
+                    'gu': 'gu-IN',
+                    'es': 'es-ES',
+                    'fr': 'fr-FR'
+                };
+                
+                const targetLang = langLocales[currentLanguage] || 'en-IN';
+                utterance.lang = targetLang;
+
+                // Bind high-quality local voices if available in browser
+                if (window.speechSynthesis.getVoices) {
+                    const voices = window.speechSynthesis.getVoices();
+                    const matchedVoice = voices.find(v => v.lang === targetLang || v.lang.startsWith(targetLang.split('-')[0]));
+                    if (matchedVoice) {
+                        utterance.voice = matchedVoice;
+                    }
+                }
+                
+                utterance.pitch = 1.05;
+                utterance.rate = 0.90; // Clear, deliberate pace
+                window.speechSynthesis.speak(utterance);
+            }
+        }
+
+
+        // Initialize Catalog Onload
+        window.addEventListener('DOMContentLoaded', loadSkillsCatalog);
+    </script>
+</body>
+</html>

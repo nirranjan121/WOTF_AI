@@ -1,0 +1,58 @@
+{
+  "name": "Folding Cloth",
+  "description": "Interactive coaching course for folding cloth compiled in real-time from webcam footage.",
+  "category": "Heritage Crafts",
+  "version": "1.0.0",
+  "steps": [
+    {
+      "index": 1,
+      "name": "Preparing the Cloth",
+      "description": "Select a clean, rectangular piece of cloth and hold it open horizontally with both hands to inspect its shape and ensure there are no deep creases before starting the fold.",
+      "voice_guideline": "Step 1: Preparing the Cloth. Hold the rectangular cloth open horizontally with both hands, making sure it is flat and taut.",
+      "illustrative_image_prompt": "Vector drawing of hands holding a clean piece of rectangular blue woven fabric open and flat.",
+      "checklist": [
+        {
+          "id": "step_1_check",
+          "title": "Cloth Taut and Flat",
+          "description": "The cloth is held flat and taut between both hands, showing its full width.",
+          "verified": false,
+          "confidence_threshold": 0.8
+        }
+      ],
+      "failure_conditions": [
+        {
+          "id": "step_1_fail",
+          "description": "Cloth crumpled or uneven",
+          "trigger_description": "The cloth is crumpled or held unevenly, which can lead to misaligned folds later.",
+          "mitigation_instruction": "Gently shake the cloth out and hold it by the top two corners to let gravity straighten it.",
+          "severity": "WARNING"
+        }
+      ]
+    },
+    {
+      "index": 2,
+      "name": "First Half Fold",
+      "description": "Fold the cloth neatly in half horizontally, ensuring that the top and bottom edges align perfectly with each other.",
+      "voice_guideline": "Step 2: Fold in Half. Fold the cloth horizontally, matching the top and bottom edges exactly, and smooth out the crease.",
+      "illustrative_image_prompt": "Vector drawing of a fabric sheet neatly folded in half horizontally, with arrows showing alignment.",
+      "checklist": [
+        {
+          "id": "step_2_check",
+          "title": "Edges Aligned",
+          "description": "Verify that the top edges of the folded cloth are perfectly aligned without any overlapping or uneven margins.",
+          "verified": false,
+          "confidence_threshold": 0.8
+        }
+      ],
+      "failure_conditions": [
+        {
+          "id": "step_2_fail",
+          "description": "Misaligned Fold",
+          "trigger_description": "Misaligned edges can cause the subsequent folds to become crooked and uneven.",
+          "mitigation_instruction": "If the edges do not align, unfold the cloth slightly, adjust the corners to match, and smooth down the fold again.",
+          "severity": "WARNING"
+        }
+      ]
+    }
+  ]
+}

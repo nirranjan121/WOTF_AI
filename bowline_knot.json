@@ -1,0 +1,122 @@
+{
+  "name": "Tying a Bowline Knot",
+  "description": "Tying a secure, non-slip loop at the end of a rope. Ideal for rescue, maritime, and utility situations.",
+  "category": "Maritime",
+  "version": "1.0.0",
+  "steps": [
+    {
+      "index": 1,
+      "name": "Form the Eye",
+      "description": "Form a small, neat loop (the 'eye' or 'rabbit hole') in the standing part of the rope. Ensure the working end rests on top.",
+      "voice_guideline": "Welcome to Bowline Knot coaching. Step 1: Form the Eye. Twist a small, neat loop in the standing line, making sure the active end lies on top.",
+      "illustrative_image_prompt": "Vector drawing of a hand forming a perfect clockwise twist loop in a blue marine rope on a clean background.",
+      "checklist": [
+        {
+          "id": "eye_formed",
+          "title": "Clean Loop Created",
+          "description": "A clean loop is formed in the main line of the rope",
+          "verified": false,
+          "confidence_threshold": 0.85
+        },
+        {
+          "id": "working_end_on_top",
+          "title": "Working End on Top",
+          "description": "The active working end of the rope lies across the top of the standing line",
+          "verified": false,
+          "confidence_threshold": 0.8
+        }
+      ],
+      "failure_conditions": [
+        {
+          "id": "backwards_loop",
+          "description": "The loop is twisted backwards, causing the rabbit hole to collapse",
+          "trigger_description": "Loop formed with working end under the standing part",
+          "mitigation_instruction": "Flip your loop so the working end rests on top of the standing rope, not behind it.",
+          "severity": "CRITICAL"
+        }
+      ]
+    },
+    {
+      "index": 2,
+      "name": "Rabbit Comes Out of the Hole",
+      "description": "Bring the working end (the 'rabbit') up through the loop (the 'hole') from the bottom side.",
+      "voice_guideline": "Excellent. Now, Step 2: Pass the working end up through the loop from underneath, just like a rabbit emerging from its hole.",
+      "illustrative_image_prompt": "Vector drawing showing the active rope end passing up through the center of the previously formed loop from behind.",
+      "checklist": [
+        {
+          "id": "rabbit_through_hole",
+          "title": "Rabbit Through Hole",
+          "description": "The working end has emerged fully from the bottom side of the loop to the top side",
+          "verified": false,
+          "confidence_threshold": 0.9
+        }
+      ],
+      "failure_conditions": [
+        {
+          "id": "wrong_direction_through_hole",
+          "description": "Working end entered from the top side instead of the bottom side",
+          "trigger_description": "Rabbit went down into the hole instead of coming up out of it",
+          "mitigation_instruction": "Take the working end back out. Thread it up through the loop from underneath.",
+          "severity": "CRITICAL"
+        }
+      ]
+    },
+    {
+      "index": 3,
+      "name": "Around the Tree",
+      "description": "Pass the working end behind the standing part of the rope (the 'tree') from right to left.",
+      "voice_guideline": "Step 3: Take the rabbit around the tree. Wrap the active rope end behind the standing main line from right to left.",
+      "illustrative_image_prompt": "Vector drawing of the rope end crossing behind the main vertical rope line and wrapping around the back.",
+      "checklist": [
+        {
+          "id": "behind_standing_part",
+          "title": "Around Standing Line",
+          "description": "The working end of the rope has wrapped completely behind the main standing line",
+          "verified": false,
+          "confidence_threshold": 0.8
+        }
+      ],
+      "failure_conditions": [
+        {
+          "id": "wrapped_front_of_tree",
+          "description": "Working end passed in front of the tree instead of behind it",
+          "trigger_description": "Working end crossed over the front of the standing line",
+          "mitigation_instruction": "You crossed in front of the main line. Pull it back and wrap it around the back of the rope.",
+          "severity": "WARNING"
+        }
+      ]
+    },
+    {
+      "index": 4,
+      "name": "Back Down the Hole & Tighten",
+      "description": "Pass the working end back down into the loop and pull the active ends to tighten the knot.",
+      "voice_guideline": "Final Step: Feed the rabbit back down into the hole and pull firmly on both parts to lock the knot in place.",
+      "illustrative_image_prompt": "Vector drawing of the rope end entering back into the original loop, with arrows showing hands pulling the knot tight.",
+      "checklist": [
+        {
+          "id": "rabbit_back_in_hole",
+          "title": "Back Into Loop",
+          "description": "Working end is threaded back down through the original loop",
+          "verified": false,
+          "confidence_threshold": 0.85
+        },
+        {
+          "id": "knot_secured",
+          "title": "Knot Secured",
+          "description": "The loop is tight and the structural shape of the bowline is locked",
+          "verified": false,
+          "confidence_threshold": 0.9
+        }
+      ],
+      "failure_conditions": [
+        {
+          "id": "missed_the_hole",
+          "description": "The working end missed the loop during return",
+          "trigger_description": "Working end is pulled tight outside the loop",
+          "mitigation_instruction": "Thread the working end back down into the small loop before tightening.",
+          "severity": "CRITICAL"
+        }
+      ]
+    }
+  ]
+}

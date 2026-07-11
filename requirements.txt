@@ -1,0 +1,6 @@
+flask
+pydantic
+python-dotenv
+opencv-python
+Pillow
+google-genai

@@ -1,0 +1,108 @@
+{
+  "name": "algebra1",
+  "description": "Mastering the algebraic expansion of the binomial identity (a + b)^2 = a^2 + 2ab + b^2 step-by-step on a whiteboard.",
+  "category": "Maths",
+  "version": "1.0.0",
+  "steps": [
+    {
+      "index": 1,
+      "name": "Write the Initial Equation",
+      "description": "Prepare the writing surface and write down the initial algebraic identity '(a + b)^2' clearly so that it is visible to all learners.",
+      "voice_guideline": "Welcome to Algebra Coaching. Step 1: Write down the binomial squared term '(a + b)^2' clearly on your whiteboard.",
+      "illustrative_image_prompt": "Vector drawing of a clean white board showing the formula (a + b)^2 written neatly in bold black marker.",
+      "checklist": [
+        {
+          "id": "step_1_check",
+          "title": "Legible Equation",
+          "description": "Verify that '(a + b)^2' is written legibly with clear spacing on the writing surface.",
+          "verified": false,
+          "confidence_threshold": 0.8
+        }
+      ],
+      "failure_conditions": [
+        {
+          "id": "illegible_formula",
+          "description": "Formula is too messy or small to read",
+          "trigger_description": "The written characters are tiny, overlapping, or illegible",
+          "mitigation_instruction": "Please write the formula '(a + b)^2' larger and with more space between terms.",
+          "severity": "WARNING"
+        }
+      ]
+    },
+    {
+      "index": 2,
+      "name": "Expand to Binomial Factors",
+      "description": "Write down the squared term (a + b)^2 as the product of two binomial factors, (a + b)(a + b), to prepare for multiplication.",
+      "voice_guideline": "Step 2: Expand the squared term. Write '(a + b)(a + b)' directly below the main identity to show the factors.",
+      "illustrative_image_prompt": "Vector drawing of the whiteboard with '(a + b)^2' and '(a + b)(a + b)' written neatly beneath it.",
+      "checklist": [
+        {
+          "id": "step_2_check",
+          "title": "Factors Written",
+          "description": "Verify that '(a + b)(a + b)' is written clearly directly below the main identity.",
+          "verified": false,
+          "confidence_threshold": 0.8
+        }
+      ],
+      "failure_conditions": [
+        {
+          "id": "missing_factors",
+          "description": "Binomial factors are missing",
+          "trigger_description": "The factors (a+b)(a+b) are not written",
+          "mitigation_instruction": "Remember to write out '(a + b)(a + b)' so learners see the full algebraic expansion steps.",
+          "severity": "CRITICAL"
+        }
+      ]
+    },
+    {
+      "index": 3,
+      "name": "Multiply Binomial Terms",
+      "description": "Use the FOIL method to multiply the terms, writing down 'a^2 + ab + ba + b^2' to show the cross products.",
+      "voice_guideline": "Step 3: Multiply the terms. Use the FOIL method to write 'a^2 + ab + ba + b^2' showing all four individual products.",
+      "illustrative_image_prompt": "Vector drawing of a whiteboard showing the detailed expanded polynomial: a^2 + ab + ba + b^2.",
+      "checklist": [
+        {
+          "id": "step_3_check",
+          "title": "Cross Products Shown",
+          "description": "Verify that the four terms 'a^2 + ab + ba + b^2' are written out clearly.",
+          "verified": false,
+          "confidence_threshold": 0.8
+        }
+      ],
+      "failure_conditions": [
+        {
+          "id": "incorrect_foil_expansion",
+          "description": "FOIL terms are incorrect or missing cross products",
+          "trigger_description": "Terms like ab or ba are skipped or written with wrong signs",
+          "mitigation_instruction": "Ensure all four cross products (a squared, ab, ba, and b squared) are clearly written.",
+          "severity": "CRITICAL"
+        }
+      ]
+    },
+    {
+      "index": 4,
+      "name": "Simplify and Prove Identity",
+      "description": "Combine the like terms 'ab' and 'ba' to write the final simplified expression: 'a^2 + 2ab + b^2'.",
+      "voice_guideline": "Final Step: Simplify the expression. Combine the middle terms to write the final solved identity: 'a^2 + 2ab + b^2'.",
+      "illustrative_image_prompt": "Vector drawing of a whiteboard showing the completed proof in a neat box: a^2 + 2ab + b^2 with a gold star.",
+      "checklist": [
+        {
+          "id": "step_4_check",
+          "title": "Final Simplified Proof",
+          "description": "Verify that the simplified expression 'a^2 + 2ab + b^2' is written clearly and boxed.",
+          "verified": false,
+          "confidence_threshold": 0.8
+        }
+      ],
+      "failure_conditions": [
+        {
+          "id": "missing_final_proof",
+          "description": "Final simplified formula is missing or incomplete",
+          "trigger_description": "Like terms are not combined or final answer is missing",
+          "mitigation_instruction": "Combine the middle 'ab' and 'ba' terms to finish with the final identity 'a^2 + 2ab + b^2'.",
+          "severity": "CRITICAL"
+        }
+      ]
+    }
+  ]
+}

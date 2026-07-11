@@ -1,0 +1,143 @@
+{
+  "name": "Soldering a Wire Join",
+  "description": "Creating a durable, conductive electrical joint by melting solder onto twisted copper wires. Requires safety gear and temperature monitoring.",
+  "category": "Electrical",
+  "version": "1.0.0",
+  "steps": [
+    {
+      "index": 1,
+      "name": "Strip and Twist Wires",
+      "description": "Strip approximately 1 inch of insulation from two multi-strand wires, then twist the copper strands together tightly in a Lineman splice.",
+      "voice_guideline": "Welcome to your Soldering Coach. Step 1: Strip and Twist Wires. Strip about 1 inch of insulation, then braid the copper strands together tightly.",
+      "illustrative_image_prompt": "Vector drawing of two colored insulated wires stripped to expose shiny twisted copper strands in a tight Lineman splice.",
+      "checklist": [
+        {
+          "id": "wires_stripped",
+          "title": "Bare Copper Exposed",
+          "description": "At least 3/4 inch of bare copper is visible on both wires",
+          "verified": false,
+          "confidence_threshold": 0.85
+        },
+        {
+          "id": "lineman_splice_twisted",
+          "title": "Splice Twisted",
+          "description": "The copper strands are braided tightly together with no loose loose threads",
+          "verified": false,
+          "confidence_threshold": 0.9
+        }
+      ],
+      "failure_conditions": [
+        {
+          "id": "exposed_insulation_burn",
+          "description": "Wires twisted too close to insulated rubber",
+          "trigger_description": "Insulation is overlapping with splice area, risking burning plastic",
+          "mitigation_instruction": "Ensure a small gap exists between the twisted copper and the rubber insulation so you don't melt the casing.",
+          "severity": "WARNING"
+        }
+      ]
+    },
+    {
+      "index": 2,
+      "name": "Heat the Copper Joint",
+      "description": "Clean your soldering iron tip, apply a tiny bit of fresh solder to 'tin' the tip, and hold the flat side of the tip directly against the underside of the copper splice.",
+      "voice_guideline": "Step 2: Heat the Copper Joint. Clean and tin your soldering iron tip, then hold it flat against the underside of the copper wires to transfer heat.",
+      "illustrative_image_prompt": "Vector drawing of a hot soldering iron tip placed against the bottom side of twisted copper wires, with heat transfer waves.",
+      "checklist": [
+        {
+          "id": "iron_tip_tinned",
+          "title": "Iron Tip Tinned",
+          "description": "Soldering iron tip is clean and shiny with fresh solder",
+          "verified": false,
+          "confidence_threshold": 0.8
+        },
+        {
+          "id": "iron_touching_wire",
+          "title": "Iron Touching Copper",
+          "description": "The hot tip is making direct, flat contact with the copper wires to heat them up",
+          "verified": false,
+          "confidence_threshold": 0.9
+        }
+      ],
+      "failure_conditions": [
+        {
+          "id": "safety_improper_grip",
+          "description": "User gripping the metal barrel instead of the plastic handle",
+          "trigger_description": "User's fingers are detected too close to the hot heating element",
+          "mitigation_instruction": "DANGER: Move your fingers back immediately! Only hold the rubber or plastic insulated handle of the iron.",
+          "severity": "CRITICAL"
+        }
+      ]
+    },
+    {
+      "index": 3,
+      "name": "Flow the Solder",
+      "description": "Press the solder wire against the TOP of the heated copper wire joint (not the iron tip itself). Let the heated copper melt the solder so it flows into the gaps.",
+      "voice_guideline": "Step 3: Flow the Solder. Press your solder wire against the top of the hot copper wires, letting the heated copper melt the solder natively.",
+      "illustrative_image_prompt": "Vector drawing showing solder wire pressed against the top of the hot copper join, flowing and melting evenly through the wire strands.",
+      "checklist": [
+        {
+          "id": "solder_wire_touching_copper",
+          "title": "Solder on Copper",
+          "description": "Solder wire is applied to the copper strands",
+          "verified": false,
+          "confidence_threshold": 0.85
+        },
+        {
+          "id": "solder_melted_and_flowed",
+          "title": "Solder Flowed",
+          "description": "Solder has melted and fully coated the copper strands evenly",
+          "verified": false,
+          "confidence_threshold": 0.9
+        }
+      ],
+      "failure_conditions": [
+        {
+          "id": "melted_on_iron",
+          "description": "Solder was melted directly on the iron tip rather than letting the heated copper wire melt it",
+          "trigger_description": "Solder touching iron tip directly, causing a weak cold joint",
+          "mitigation_instruction": "Do not touch the solder directly to the iron tip. Touch it to the heated copper wires on the opposite side so they melt it.",
+          "severity": "CRITICAL"
+        },
+        {
+          "id": "joint_overheated",
+          "description": "Soldering iron has been in contact with the wire for over 8 seconds continuously",
+          "trigger_description": "Time touching exceeds threshold, risking burning copper and melting wire insulation",
+          "mitigation_instruction": "Remove the iron tip now! You are overheating the joint. Let it cool down before trying again.",
+          "severity": "CRITICAL"
+        }
+      ]
+    },
+    {
+      "index": 4,
+      "name": "Cool and Inspect Joint",
+      "description": "Remove the soldering iron and solder wire. Keep the joint completely motionless for 5 seconds while it solidifies. Inspect the finished joint.",
+      "voice_guideline": "Final Step: Cool and Inspect. Remove both the iron and solder. Keep the joint completely motionless while it cools to solid silver.",
+      "illustrative_image_prompt": "Vector drawing of a shiny, silver, solidified electrical joint cooling under a magnifying glass.",
+      "checklist": [
+        {
+          "id": "iron_removed",
+          "title": "Iron Removed",
+          "description": "The soldering iron heating element has been removed from the work area",
+          "verified": false,
+          "confidence_threshold": 0.95
+        },
+        {
+          "id": "joint_solidified",
+          "title": "Solder Solidified",
+          "description": "The solder has cooled and the wires are held rigid",
+          "verified": false,
+          "confidence_threshold": 0.9
+        }
+      ],
+      "failure_conditions": [
+        {
+          "id": "cold_joint_dull",
+          "description": "A grainy, dull, or fractured joint surface indicating movement during cooling",
+          "trigger_description": "Dull grey look or cracked texture detected in wire connection",
+          "mitigation_instruction": "The solder finish is dull and grainy, indicating a cold joint. Re-heat the wire and let it cool completely motionless this time.",
+          "severity": "WARNING"
+        }
+      ]
+    }
+  ]
+}

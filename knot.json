@@ -1,0 +1,33 @@
+{
+  "name": "Knot",
+  "description": "Interactive coaching course for knot compiled in real-time from webcam footage.",
+  "category": "Heritage Crafts",
+  "version": "1.0.0",
+  "steps": [
+    {
+      "index": 1,
+      "name": "Forming the Initial Loop",
+      "description": "Select a suitable length of cord or string, hold both ends in your hands, and cross them over to form a clear, open circular loop in the center.",
+      "voice_guideline": "Step 1: Forming the Loop. Select a length of cord, hold both ends, and cross them over to form a clear circular loop.",
+      "illustrative_image_prompt": "Vector drawing of a simple open loop formed with a green rope, crossed at the bottom.",
+      "checklist": [
+        {
+          "id": "step_1_check",
+          "title": "Circular Loop Formed",
+          "description": "Verify that the cord forms a complete, stable circular loop with the two ends crossing over each other.",
+          "verified": false,
+          "confidence_threshold": 0.8
+        }
+      ],
+      "failure_conditions": [
+        {
+          "id": "step_1_fail",
+          "description": "Loop too small",
+          "trigger_description": "The loop is too small or the ends are uneven, making it difficult to thread the knot in subsequent steps.",
+          "mitigation_instruction": "Ensure you leave at least 10-15 centimeters of working cord on each end and keep the central loop wide and loose.",
+          "severity": "WARNING"
+        }
+      ]
+    }
+  ]
+}

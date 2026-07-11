@@ -1,0 +1,11 @@
+# Ignore environment variable files to prevent accidental API key leaks
+.env
+.env.local
+.env.*
+
+# Ignore compiled python files
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.pytest_cache/
