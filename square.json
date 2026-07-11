@@ -1,0 +1,80 @@
+{
+  "name": "square",
+  "description": "Interactive coaching course for square compiled in real-time from webcam footage.",
+  "category": "Heritage Crafts",
+  "version": "1.0.0",
+  "steps": [
+    {
+      "index": 1,
+      "name": "Drawing the Base Line",
+      "description": "Begin by placing the marker or chalk on the surface and drawing a straight, horizontal base line to establish the bottom edge of the square.",
+      "voice_guideline": null,
+      "illustrative_image_prompt": null,
+      "checklist": [
+        {
+          "id": "step_1_check",
+          "title": null,
+          "description": "Verify that the base line is perfectly horizontal and of the desired length.",
+          "verified": false,
+          "confidence_threshold": 0.8
+        }
+      ],
+      "failure_conditions": [
+        {
+          "id": "step_1_fail",
+          "trigger_description": "The line is slanted or wavy instead of straight.",
+          "mitigation_instruction": "Use a straight edge or ruler as a guide to ensure a perfectly straight horizontal line.",
+          "severity": "WARNING"
+        }
+      ]
+    },
+    {
+      "index": 2,
+      "name": "Drawing the Perpendicular Side",
+      "description": "Draw a vertical line of the exact same length (4 cm) starting from one end of the base line, ensuring it is perfectly perpendicular (at a 90-degree angle) to the base line.",
+      "voice_guideline": null,
+      "illustrative_image_prompt": null,
+      "checklist": [
+        {
+          "id": "step_2_check",
+          "title": null,
+          "description": "Verify that the angle between the base line and the new vertical line is exactly 90 degrees.",
+          "verified": false,
+          "confidence_threshold": 0.8
+        }
+      ],
+      "failure_conditions": [
+        {
+          "id": "step_2_fail",
+          "trigger_description": "The vertical line is tilted or slanted, making the angle unequal to 90 degrees.",
+          "mitigation_instruction": "If the line is slanted, erase it and use a right-angle ruler or alignment tool to guide your marker straight up.",
+          "severity": "WARNING"
+        }
+      ]
+    },
+    {
+      "index": 3,
+      "name": "Completing the Square and Labeling Dimensions",
+      "description": "Draw the remaining parallel and perpendicular sides to complete the closed four-sided square shape, then label the side lengths to verify equal dimensions.",
+      "voice_guideline": null,
+      "illustrative_image_prompt": null,
+      "checklist": [
+        {
+          "id": "step_3_check",
+          "title": null,
+          "description": "Verify that all four sides are closed, of equal length, and the corners form 90-degree angles, with the dimension clearly labeled.",
+          "verified": false,
+          "confidence_threshold": 0.8
+        }
+      ],
+      "failure_conditions": [
+        {
+          "id": "step_3_fail",
+          "trigger_description": "The opposite sides are not parallel, resulting in an irregular quadrilateral instead of a perfect square.",
+          "mitigation_instruction": "Use a ruler or measuring scale to ensure opposite sides are of identical length and parallel to each other before finalizing the lines.",
+          "severity": "WARNING"
+        }
+      ]
+    }
+  ]
+}

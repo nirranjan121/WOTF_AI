@@ -346,6 +346,7 @@
 
         // Render current step checklists
         let lastAnnouncedStepIndex = 0;
+        let isAnnouncingGuideline = false;
         
         // Priming speech synthesis to bypass modern browser autoplay blocks
         function primeSpeechSynthesis() {
@@ -363,12 +364,23 @@
             if (!step) return;
 
             const voiceText = step.voice_guideline || step.description;
-            speakTTS(voiceText);
+            
+            // Set locking state to prevent 7-second periodic evaluations from cutting off this introduction
+            isAnnouncingGuideline = true;
+            speakTTS(voiceText, true); // Force-speak the introduction
+            
+            // Estimate guideline audio duration to release the speaking lock (approx 180ms per word + safety margin)
+            const wordCount = voiceText.split(/\s+/).length;
+            const estimatedDuration = (wordCount * 180) + 1200;
+            setTimeout(() => {
+                isAnnouncingGuideline = false;
+            }, estimatedDuration);
             
             // Translate for display bubble
             const translatedMsg = await translateTextIfNeeded(voiceText);
             document.getElementById('tts-bubble').innerHTML = `<span class="audio-wave">🔊</span> ${translatedMsg}`;
         }
+
 
         // Render current step checklists
         function renderCurrentStep() {
@@ -752,32 +764,47 @@
                     feedbackText = result.tts_feedback.join(". ");
                 }
 
-                // Speak out loud only if we have specific checkpoint/vocal feedback
-                if (feedbackText) {
-                    speakTTS(feedbackText);
+                // If step index advanced, handle the delayed transition sequence
+                if (result.current_step_idx > currentStepIndex) {
+                    // 1. Show the completed tick marks on the CURRENT step first
+                    activeVerifiedIds = result.verified_item_ids || [];
+                    renderCurrentStep();
+
+                    // 2. Speak transition success message immediately (force bypasses active locks)
+                    speakTTS("Checking your visual alignment. Checklist satisfied! Moving onto the next step.", true);
+
+                    // 3. Keep showing the completed tick marks for 3.5 seconds before transitioning screen to next step
+                    setTimeout(() => {
+                        currentStepIndex = result.current_step_idx;
+                        renderCurrentStep(); // Show next step's checklist
+                        announceStepGuideline(currentStepIndex);
+                    }, 3500);
+
+                } else {
+                    // Normal evaluation step: update checklist tick marks and speak verbal coaching feedback/rationale
+                    activeVerifiedIds = result.verified_item_ids || [];
+                    renderCurrentStep();
+
+                    const speakMsg = feedbackText || result.rationale;
+                    speakTTS(speakMsg);
                 }
 
                 // Update Nano Banana avatar expression
                 updateNanoBananaState(result.engine_state, result.rationale);
 
-                // Update verified checkpoints
-                activeVerifiedIds = result.verified_item_ids || [];
-                renderCurrentStep();
-
                 // Handle RETRY / warning displays
                 if (result.engine_state === "RETRY_NEEDED") {
                     alertBox.className = "safety-alert-overlay triggered";
                     document.getElementById('alert-desc-text').innerText = translatedRationale;
-                    // Speak safety warnings immediately so the user hears them hands-free
-                    speakTTS(`Warning: ${translatedRationale}`);
+                    // Force speak safety warnings immediately so the user hears them hands-free
+                    speakTTS(`Warning: ${translatedRationale}`, true);
                 } else {
                     alertBox.className = "safety-alert-overlay";
                 }
 
-
-                // If step is completed, handle next transitions
+                // If module is completed, handle next transitions
                 if (result.engine_state === "COMPLETED") {
-                    speakTTS("Brilliant! You have successfully mastered this entire craft module. Excellent work!");
+                    speakTTS("Brilliant! You have successfully mastered this entire craft module. Excellent work!", true);
                     updateNanoBananaState("COMPLETED", "Fantastic! You are certified!");
                     alert("🏆 Module Completed Successfully!");
                     
@@ -787,15 +814,6 @@
                     return;
                 }
 
-                // If step index advanced
-                if (result.current_step_idx > currentStepIndex) {
-                    currentStepIndex = result.current_step_idx;
-                    speakTTS("Checking your visual alignment. Checklist satisfied! Moving onto the next step.");
-                    renderCurrentStep();
-                    setTimeout(() => {
-                        announceStepGuideline(currentStepIndex);
-                    }, 2500);
-                }
 
 
                 if (!frameB64) resetCamPlaceholder();
@@ -1255,33 +1273,42 @@
                     feedbackText = result.tts_feedback.join(". ");
                 }
 
-                if (feedbackText) {
-                    speakTTS(feedbackText);
-                }
+                // If step index advanced, handle the delayed transition sequence
+                if (result.current_step_idx > currentStepIndex) {
+                    // 1. Show the completed tick marks on the CURRENT step first
+                    activeVerifiedIds = result.verified_item_ids || [];
+                    renderCurrentStep();
 
+                    // 2. Speak transition success message immediately
+                    speakTTS("Checking your visual alignment. Checklist satisfied! Moving onto the next step.", true);
+
+                    // 3. Keep showing the completed tick marks for 3.5 seconds before transitioning screen to next step
+                    setTimeout(() => {
+                        currentStepIndex = result.current_step_idx;
+                        renderCurrentStep(); // Show next step's checklist
+                        announceStepGuideline(currentStepIndex);
+                    }, 3500);
+
+                } else {
+                    // Normal evaluation step: update checklist tick marks and speak verbal coaching feedback/rationale
+                    activeVerifiedIds = result.verified_item_ids || [];
+                    renderCurrentStep();
+
+                    const speakMsg = feedbackText || result.rationale;
+                    speakTTS(speakMsg);
+                }
 
                 // Update Nano Banana avatar expression
                 updateNanoBananaState(result.engine_state, result.rationale);
 
-                activeVerifiedIds = result.verified_item_ids || [];
-                renderCurrentStep();
-
                 if (result.engine_state === "COMPLETED") {
-                    speakTTS("Brilliant! You have successfully mastered this entire craft module. Excellent work!");
+                    speakTTS("Brilliant! You have successfully mastered this entire craft module. Excellent work!", true);
                     updateNanoBananaState("COMPLETED", "Fantastic! You are certified!");
                     alert("🏆 Module Completed Successfully!");
                     switchTab('curriculum');
                     return;
                 }
 
-                if (result.current_step_idx > currentStepIndex) {
-                    currentStepIndex = result.current_step_idx;
-                    speakTTS("Checking your visual alignment. Checklist satisfied! Moving onto the next step.");
-                    renderCurrentStep();
-                    setTimeout(() => {
-                        announceStepGuideline(currentStepIndex);
-                    }, 2500);
-                }
 
 
             } catch (err) {
@@ -1293,7 +1320,7 @@
         }
 
         // Web Speech synthesis with dynamic translation and accent voice matching
-        async function speakTTS(text) {
+        async function speakTTS(text, force = false) {
             if (!text) return;
             
             // Auto-translate if user selected a localized vernacular language
@@ -1303,7 +1330,12 @@
             }
 
             if ('speechSynthesis' in window) {
+                console.log(`[TTS] Speaking: "${textToSpeak}" in language locale: ${currentLanguage}`);
+                
+                // Chrome SpeechSynthesis queue un-stuck safety sequence
                 window.speechSynthesis.cancel();
+                window.speechSynthesis.resume(); 
+
                 const utterance = new SpeechSynthesisUtterance(textToSpeak);
                 
                 // Set the accent voice according to current selection (Interactions API / SpeechSynthesis locale mappings)
@@ -1327,17 +1359,30 @@
                 // Bind high-quality local voices if available in browser
                 if (window.speechSynthesis.getVoices) {
                     const voices = window.speechSynthesis.getVoices();
-                    const matchedVoice = voices.find(v => v.lang === targetLang || v.lang.startsWith(targetLang.split('-')[0]));
-                    if (matchedVoice) {
-                        utterance.voice = matchedVoice;
+                    if (voices && voices.length > 0) {
+                        const matchedVoice = voices.find(v => v.lang === targetLang || v.lang.startsWith(targetLang.split('-')[0]));
+                        if (matchedVoice) {
+                            utterance.voice = matchedVoice;
+                        }
                     }
                 }
                 
                 utterance.pitch = 1.05;
+                utterance.volume = 1.0; // Ensure full audibility
                 utterance.rate = 0.90; // Clear, deliberate pace
+
+
+                utterance.onerror = function(event) {
+                    console.error("[TTS] SpeechSynthesisUtterance error encountered:", event);
+                    window.speechSynthesis.resume(); // Unstick engine on error
+                };
+
                 window.speechSynthesis.speak(utterance);
+            } else {
+                console.warn("[TTS] Web SpeechSynthesis not supported in this browser.");
             }
         }
+
 
 
         // Initialize Catalog Onload
