@@ -645,6 +645,10 @@ def translate_text():
             contents=prompt
         )
         
+        translated = response.text.strip()
+        if translated.startswith('"') and translated.endswith('"'):
+            translated = translated[1:-1]
+            
         return jsonify({"translated_text": translated})
     except Exception as e:
         print(f"Translation failed: {e}")
