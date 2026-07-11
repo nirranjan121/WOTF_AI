@@ -23,12 +23,13 @@ class StreamChunkResult(BaseModel):
 # Definitive Google Gemini Model Registry
 MODEL_REGISTRY = {
     "vision_evaluation": "gemini-3.5-flash",                # Supports Computer Use safety standards
-    "live_translation": "gemini-3.5-live-translate-preview", # Real-time Gemini Live Translate
+    "live_translation": "gemini-3.5-flash",                  # High-quality translation fallback to avoid preview errors
     "multimodal_flow": "gemini-omni-flash-preview",          # Omni-media flash model
     "voice_coaching": "gemini-3.1-flash-tts-preview",        # Gemini 3.1 Text-to-Speech preview
     "interactive_live": "gemini-3.1-flash-live-preview",     # Gemini Flash Live audio-to-audio preview
     "banana_generator": "gemini-3.1-flash-lite-image"        # Nano Banana 2 Lite for visual assets
 }
+
 
 app = Flask(__name__)
 
