@@ -752,9 +752,10 @@
                     feedbackText = result.tts_feedback.join(". ");
                 }
 
-                // Verbally speak feedback, falling back to rationale
-                const speakMsg = feedbackText || result.rationale;
-                speakTTS(speakMsg);
+                // Speak out loud only if we have specific checkpoint/vocal feedback
+                if (feedbackText) {
+                    speakTTS(feedbackText);
+                }
 
                 // Update Nano Banana avatar expression
                 updateNanoBananaState(result.engine_state, result.rationale);
@@ -767,9 +768,12 @@
                 if (result.engine_state === "RETRY_NEEDED") {
                     alertBox.className = "safety-alert-overlay triggered";
                     document.getElementById('alert-desc-text').innerText = translatedRationale;
+                    // Speak safety warnings immediately so the user hears them hands-free
+                    speakTTS(`Warning: ${translatedRationale}`);
                 } else {
                     alertBox.className = "safety-alert-overlay";
                 }
+
 
                 // If step is completed, handle next transitions
                 if (result.engine_state === "COMPLETED") {
@@ -1251,8 +1255,10 @@
                     feedbackText = result.tts_feedback.join(". ");
                 }
 
-                const speakMsg = feedbackText || result.rationale;
-                speakTTS(speakMsg);
+                if (feedbackText) {
+                    speakTTS(feedbackText);
+                }
+
 
                 // Update Nano Banana avatar expression
                 updateNanoBananaState(result.engine_state, result.rationale);
