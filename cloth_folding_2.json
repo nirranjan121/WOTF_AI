@@ -1,0 +1,80 @@
+{
+  "name": "cloth folding 2",
+  "description": "Interactive coaching course for cloth folding 2 compiled in real-time from webcam footage.",
+  "category": "Heritage Crafts",
+  "version": "1.0.0",
+  "steps": [
+    {
+      "index": 1,
+      "name": "Displaying and Aligning the Cloth",
+      "description": "Hold the square blue cloth by its top two corners, ensuring it is fully unfolded, flat, and free of wrinkles before beginning the folding process.",
+      "voice_guideline": null,
+      "illustrative_image_prompt": null,
+      "checklist": [
+        {
+          "id": "step_1_check",
+          "title": null,
+          "description": "The cloth is held up straight, fully spread out, with no visible folds or creases.",
+          "verified": false,
+          "confidence_threshold": 0.8
+        }
+      ],
+      "failure_conditions": [
+        {
+          "id": "step_1_fail",
+          "trigger_description": "Holding the cloth unevenly or letting it sag in the middle.",
+          "mitigation_instruction": "Pull your hands slightly apart to create gentle tension, keeping the top edge straight and level.",
+          "severity": "WARNING"
+        }
+      ]
+    },
+    {
+      "index": 2,
+      "name": "Creating the First Diagonal Fold",
+      "description": "Bring two diagonally opposite corners of the square cloth together to fold it in half, creating a clean triangular shape. Hold the joined corners firmly to keep the fold secure.",
+      "voice_guideline": null,
+      "illustrative_image_prompt": null,
+      "checklist": [
+        {
+          "id": "step_2_check",
+          "title": null,
+          "description": "Verify that the cloth forms a neat triangle with the edges aligned and no major wrinkles or overlapping mismatches.",
+          "verified": false,
+          "confidence_threshold": 0.8
+        }
+      ],
+      "failure_conditions": [
+        {
+          "id": "step_2_fail",
+          "trigger_description": "Misaligned corners or uneven edges that distort the triangular shape.",
+          "mitigation_instruction": "If the edges do not line up, release the corners, flatten the cloth, and carefully bring the opposite corners together again, smoothing the fold from the center outward.",
+          "severity": "WARNING"
+        }
+      ]
+    },
+    {
+      "index": 3,
+      "name": "Creating the Second Diagonal Fold",
+      "description": "Fold the triangular cloth in half once more by bringing the two remaining base corners together, forming a smaller, thicker triangle.",
+      "voice_guideline": null,
+      "illustrative_image_prompt": null,
+      "checklist": [
+        {
+          "id": "step_3_check",
+          "title": null,
+          "description": "Verify that the cloth is now a neat, smaller triangle with all edges aligned and no loose corners sticking out.",
+          "verified": false,
+          "confidence_threshold": 0.8
+        }
+      ],
+      "failure_conditions": [
+        {
+          "id": "step_3_fail",
+          "trigger_description": "The corners may misalign, causing the triangle to become asymmetrical or uneven.",
+          "mitigation_instruction": "Carefully align the base corners before pressing down on the fold, smoothing out any wrinkles from the center outwards.",
+          "severity": "WARNING"
+        }
+      ]
+    }
+  ]
+}

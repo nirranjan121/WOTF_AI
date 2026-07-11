@@ -630,6 +630,43 @@
         let currentLanguage = 'en';
         let liveCoachingIntervalId = null;
         let coachingSpeechRecognition = null;
+        
+        // Interactive Bidirectional Q&A variables
+        let isWaitingForQuestionAnswer = false;
+        let questionUtteranceText = "";
+        let coachingEvaluationCount = 0;
+
+        // Custom conversational response router for co-pilot check-in questions
+        async function handleVerbalQuestionResponse(transcript) {
+            const lower = transcript.toLowerCase();
+            console.log(`[Co-Pilot Q&A] Processing user response: "${transcript}"`);
+            
+            let acknowledgment = "";
+            let resolved = false;
+
+            // Detect positive affirmations
+            if (lower.includes("yes") || lower.includes("yeah") || lower.includes("yep") || lower.includes("sure") || lower.includes("ready") || lower.includes("perfect") || lower.includes("clear") || lower.includes("comfortable") || lower.includes("doing it") || lower.includes("fine") || lower.includes("i am")) {
+                acknowledgment = "Fantastic! Let's hold that alignment. I am matching your webcam viewpoint right now.";
+                resolved = true;
+            }
+            // Detect negative adjustments
+            else if (lower.includes("no") || lower.includes("not yet") || lower.includes("wait") || lower.includes("nope") || lower.includes("hard") || lower.includes("difficult") || lower.includes("uncomfortable") || lower.includes("shaking")) {
+                acknowledgment = "No worries at all! Physical craft mastery takes patience. Take a moment to stabilize, I will keep watching.";
+                resolved = true;
+            }
+            // Detect request to repeat
+            else if (lower.includes("repeat") || lower.includes("say again") || lower.includes("what")) {
+                acknowledgment = `Sure, I'll repeat the check: ${questionUtteranceText}`;
+            }
+
+            if (resolved) {
+                isWaitingForQuestionAnswer = false;
+                document.getElementById('tts-bubble').innerHTML = `<span class="audio-wave">🔊</span> 🤖 <strong>Co-Pilot:</strong> "${acknowledgment}"`;
+                speakTTS(acknowledgment, true);
+            } else if (acknowledgment) {
+                speakTTS(acknowledgment, true);
+            }
+        }
 
         // Translation utility via backend Gemini
         async function translateTextIfNeeded(text) {
@@ -733,6 +770,13 @@
                     }
                     if (transcript) {
                         console.log("Coaching speech heard: ", transcript);
+                        
+                        // Check if we are waiting for a user answer to a co-pilot coaching question
+                        if (isWaitingForQuestionAnswer) {
+                            handleVerbalQuestionResponse(transcript);
+                            return; // Bypass standard command translation for this turn
+                        }
+                        
                         if (transcript.includes("speak in hindi") || transcript.includes("translate to hindi") || transcript.includes("हिंदी")) {
                             changeCoachingLanguage('hi');
                         } else if (transcript.includes("speak in tamil") || transcript.includes("translate to tamil") || transcript.includes("தமிழ்")) {
@@ -879,6 +923,33 @@
 
                 // Update Nano Banana avatar expression
                 updateNanoBananaState(result.engine_state, result.rationale);
+
+                // Increment visual evaluation loop count
+                coachingEvaluationCount++;
+                
+                // Every 4 cycles evaluated, ask an interactive co-pilot check-in question
+                if (coachingEvaluationCount % 4 === 0 && !isWaitingForQuestionAnswer && result.engine_state !== "COMPLETED") {
+                    setTimeout(async () => {
+                        const checkQuestions = [
+                            "Are your hands positioned comfortably for this step?",
+                            "Can you see the alignment markings clearly on your workpiece?",
+                            "Are you ready to lock in this placement?",
+                            "Does the guide alignment overlay look accurate on your feed?",
+                            "Do you need me to repeat the instructions for this step?"
+                        ];
+                        const randomQ = checkQuestions[Math.floor(Math.random() * checkQuestions.length)];
+                        
+                        questionUtteranceText = randomQ;
+                        isWaitingForQuestionAnswer = true;
+                        
+                        console.log(`[Co-Pilot Q&A] Directing check-in question: "${randomQ}"`);
+                        
+                        // Translate the question to selected language if needed before speaking
+                        const translatedQ = await translateTextIfNeeded(randomQ);
+                        document.getElementById('tts-bubble').innerHTML = `<span class="audio-wave">❓</span> 🤖 <strong>Co-Pilot:</strong> "${translatedQ}" <span style="font-size:0.8rem; color:var(--primary); font-weight:600; display:block; margin-top:0.25rem;">(Listening for your response...)</span>`;
+                        speakTTS(translatedQ, true);
+                    }, 4500); // Delay to let previous evaluation audio playback finish cleanly
+                }
 
                 // Handle RETRY / warning displays
                 if (result.engine_state === "RETRY_NEEDED") {
@@ -1411,6 +1482,9 @@
         async function speakTTS(text, force = false) {
             if (!text) return;
             
+            // Auto-prime speech synthesizer to unlock active browser context
+            primeSpeechSynthesis();
+            
             // Auto-translate if user selected a localized vernacular language
             let textToSpeak = text;
             if (currentLanguage !== 'en') {
@@ -1419,8 +1493,10 @@
 
             console.log(`[TTS] Speaking via Gemini Audio: "${textToSpeak}" (Language selection: ${currentLanguage})`);
             
-            // Render text inside visible verbal guide bubble
-            document.getElementById('tts-bubble').innerHTML = `<span class="audio-wave">🔊</span> "${textToSpeak}"`;
+            // Render text inside visible verbal guide bubble unless in a Q&A session
+            if (!isWaitingForQuestionAnswer) {
+                document.getElementById('tts-bubble').innerHTML = `<span class="audio-wave">🔊</span> "${textToSpeak}"`;
+            }
 
             try {
                 const response = await fetch('/api/speak', {
@@ -1433,17 +1509,20 @@
                 });
                 
                 const data = await response.json();
-                if (data.audio) {
+                if (data.audio && !data.fallback) {
                     const audioSrc = `data:${data.mime_type};base64,${data.audio}`;
                     const audio = new Audio(audioSrc);
                     audio.volume = 1.0;
-                    audio.play();
+                    audio.play().catch(playErr => {
+                        console.warn("[TTS] base64 audio play blocked by browser autoplay, calling local WebSpeech fallback:", playErr);
+                        fallbackBrowserSpeech(textToSpeak);
+                    });
                 } else {
-                    console.warn("[TTS] Server speak API did not return audio. Falling back to local SpeechSynthesis.");
+                    console.warn("[TTS] Server speak returned fallback flag, using local WebSpeech.");
                     fallbackBrowserSpeech(textToSpeak);
                 }
             } catch (err) {
-                console.error("[TTS] Server speak fetch failed:", err);
+                console.error("[TTS] Server speak fetch failed, using local WebSpeech:", err);
                 fallbackBrowserSpeech(textToSpeak);
             }
         }

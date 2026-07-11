@@ -723,7 +723,8 @@ def speak_text():
                 continue
                 
         if not response:
-            return jsonify({"error": f"Failed to generate speech with any model: {error_msg}"}), 500
+            print(f"[TTS API] Failed to generate speech with any model. Returning soft fallback flag to client. Error: {error_msg}")
+            return jsonify({"fallback": True, "message": f"Failed to generate speech: {error_msg}"})
             
         audio_bytes = b""
         mime_type = "audio/wav"
@@ -735,19 +736,21 @@ def speak_text():
                     mime_type = part.inline_data.mime_type
                     
         if not audio_bytes:
-            return jsonify({"error": "No audio data returned by Gemini"}), 500
+            print("[TTS API] No audio bytes returned. Returning soft fallback flag.")
+            return jsonify({"fallback": True, "message": "No audio data returned by Gemini"})
             
         print(f"[TTS API] Generated {len(audio_bytes)} audio bytes of type {mime_type}")
         
         encoded_audio = base64.b64encode(audio_bytes).decode('utf-8')
         return jsonify({
             "audio": encoded_audio,
-            "mime_type": mime_type
+            "mime_type": mime_type,
+            "fallback": False
         })
     except Exception as e:
         import traceback
         traceback.print_exc()
-        return jsonify({"error": str(e)}), 500
+        return jsonify({"fallback": True, "error": str(e)})
 
 
 @app.route('/api/generate-step-image', methods=['POST'])
@@ -761,7 +764,13 @@ def generate_step_image():
         if not prompt:
             prompt = f"An illustration of {step_name}"
             
-        enriched_prompt = f"A high-quality 2D vector graphic blueprint detailing: {prompt}. Beautiful dark technical style background, clean lines, suitable for vocational visual guidance, glowing cyan and yellow accents."
+        # Photo-realistic workstation prompt to make the generated image as close to the actual physical step as possible!
+        enriched_prompt = (
+            f"A realistic, high-resolution, professional step-by-step instructional photograph "
+            f"showing exactly how to perform this physical vocational task: '{prompt}'. "
+            f"Focused close-up on clean human hands holding the tools and workpiece, correct alignment, "
+            f"bright workshop bench lighting, highly accurate educational visual guide."
+        )
         
         from google import genai
         from google.genai import types
