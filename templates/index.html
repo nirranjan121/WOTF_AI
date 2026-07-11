@@ -596,7 +596,34 @@
                 caption.style.display = 'block'; // Ensure HUD floating caption is active and visible
             });
 
+            // Dynamically generate the step illustration image using Gemini 3.1 Flash Lite Image
+            fetch('/api/generate-step-image', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    prompt: step.illustrative_image_prompt || step.description,
+                    step_name: step.name
+                })
+            })
+            .then(res => res.json())
+            .then(data => {
+                if (data.image) {
+                    container.style.backgroundImage = `linear-gradient(rgba(15, 23, 42, 0.65), rgba(15, 23, 42, 0.65)), url(data:${data.mime_type};base64,${data.image})`;
+                    container.style.backgroundSize = 'cover';
+                    container.style.backgroundPosition = 'center';
+                } else {
+                    // Styled digital tech-grid background fallback if image generation is unavailable
+                    container.style.backgroundImage = `radial-gradient(rgba(0, 242, 254, 0.15) 1px, transparent 1px)`;
+                    container.style.backgroundSize = '20px 20px';
+                }
+            })
+            .catch(err => {
+                console.error("[Image Gen] Error fetching step visual image:", err);
+                container.style.backgroundImage = `radial-gradient(rgba(0, 242, 254, 0.15) 1px, transparent 1px)`;
+                container.style.backgroundSize = '20px 20px';
+            });
         }
+
 
 
         // Global variables for Phase 2 continuous loop
@@ -1380,7 +1407,7 @@
             }
         }
 
-        // Web Speech synthesis with dynamic translation and accent voice matching
+        // Premium Gemini Audio speech synthesis with browser fallback
         async function speakTTS(text, force = false) {
             if (!text) return;
             
@@ -1390,54 +1417,57 @@
                 textToSpeak = await translateTextIfNeeded(text);
             }
 
-            if ('speechSynthesis' in window) {
-                console.log(`[TTS] Speaking: "${textToSpeak}" in language locale: ${currentLanguage}`);
+            console.log(`[TTS] Speaking via Gemini Audio: "${textToSpeak}" (Language selection: ${currentLanguage})`);
+            
+            // Render text inside visible verbal guide bubble
+            document.getElementById('tts-bubble').innerHTML = `<span class="audio-wave">🔊</span> "${textToSpeak}"`;
+
+            try {
+                const response = await fetch('/api/speak', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        text: textToSpeak,
+                        target_lang: currentLanguage
+                    })
+                });
                 
-                // Chrome SpeechSynthesis queue un-stuck safety sequence
+                const data = await response.json();
+                if (data.audio) {
+                    const audioSrc = `data:${data.mime_type};base64,${data.audio}`;
+                    const audio = new Audio(audioSrc);
+                    audio.volume = 1.0;
+                    audio.play();
+                } else {
+                    console.warn("[TTS] Server speak API did not return audio. Falling back to local SpeechSynthesis.");
+                    fallbackBrowserSpeech(textToSpeak);
+                }
+            } catch (err) {
+                console.error("[TTS] Server speak fetch failed:", err);
+                fallbackBrowserSpeech(textToSpeak);
+            }
+        }
+
+        // Safe client-side Web Speech synthesis fallback
+        function fallbackBrowserSpeech(textToSpeak) {
+            if ('speechSynthesis' in window) {
+                console.log(`[TTS Fallback] Speaking locally: "${textToSpeak}"`);
                 window.speechSynthesis.cancel();
                 window.speechSynthesis.resume(); 
 
                 const utterance = new SpeechSynthesisUtterance(textToSpeak);
-                
-                // Set the accent voice according to current selection (Interactions API / SpeechSynthesis locale mappings)
                 const langLocales = {
-                    'en': 'en-IN',
-                    'hi': 'hi-IN',
-                    'ta': 'ta-IN',
-                    'te': 'te-IN',
-                    'kn': 'kn-IN',
-                    'ml': 'ml-IN',
-                    'mr': 'mr-IN',
-                    'bn': 'bn-IN',
-                    'gu': 'gu-IN',
-                    'es': 'es-ES',
-                    'fr': 'fr-FR'
+                    'en': 'en-IN', 'hi': 'hi-IN', 'ta': 'ta-IN', 'te': 'te-IN',
+                    'kn': 'kn-IN', 'ml': 'ml-IN', 'mr': 'mr-IN', 'bn': 'bn-IN',
+                    'gu': 'gu-IN', 'es': 'es-ES', 'fr': 'fr-FR'
                 };
+                utterance.lang = langLocales[currentLanguage] || 'en-IN';
+                utterance.volume = 1.0;
+                utterance.rate = 0.90;
                 
-                const targetLang = langLocales[currentLanguage] || 'en-IN';
-                utterance.lang = targetLang;
-
-                // Bind high-quality local voices if available in browser
-                if (window.speechSynthesis.getVoices) {
-                    const voices = window.speechSynthesis.getVoices();
-                    if (voices && voices.length > 0) {
-                        const matchedVoice = voices.find(v => v.lang === targetLang || v.lang.startsWith(targetLang.split('-')[0]));
-                        if (matchedVoice) {
-                            utterance.voice = matchedVoice;
-                        }
-                    }
-                }
-                
-                utterance.pitch = 1.05;
-                utterance.volume = 1.0; // Ensure full audibility
-                utterance.rate = 0.90; // Clear, deliberate pace
-
-
-                utterance.onerror = function(event) {
-                    console.error("[TTS] SpeechSynthesisUtterance error encountered:", event);
-                    window.speechSynthesis.resume(); // Unstick engine on error
+                utterance.onerror = function() {
+                    window.speechSynthesis.resume();
                 };
-
                 window.speechSynthesis.speak(utterance);
             } else {
                 console.warn("[TTS] Web SpeechSynthesis not supported in this browser.");

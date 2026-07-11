@@ -645,14 +645,195 @@ def translate_text():
             contents=prompt
         )
         
-        translated = response.text.strip()
-        if translated.startswith('"') and translated.endswith('"'):
-            translated = translated[1:-1]
-            
         return jsonify({"translated_text": translated})
     except Exception as e:
         print(f"Translation failed: {e}")
         return jsonify({"translated_text": text})
+
+
+@app.route('/api/speak', methods=['POST'])
+def speak_text():
+    """Generates high-fidelity spoken audio for the given text using Gemini Audio TTS."""
+    try:
+        data = request.get_json(silent=True) or {}
+        text = data.get('text', '').strip()
+        target_lang = data.get('target_lang', 'en').strip()
+        
+        if not text:
+            return jsonify({"error": "No text provided"}), 400
+            
+        lang_names = {
+            'hi': 'Hindi',
+            'ta': 'Tamil',
+            'te': 'Telugu',
+            'kn': 'Kannada',
+            'ml': 'Malayalam',
+            'mr': 'Marathi',
+            'bn': 'Bengali',
+            'gu': 'Gujarati',
+            'es': 'Spanish',
+            'fr': 'French',
+            'en': 'English'
+        }
+        lang_name = lang_names.get(target_lang, 'English')
+        
+        from google import genai
+        from google.genai import types
+        import base64
+        
+        client = genai.Client()
+        
+        # Spoken instruction prompt requesting native regional speech accent
+        prompt = f"Please speak this instruction out loud in a natural, clear, warm, and highly encouraging {lang_name} voice: \"{text}\""
+        
+        # Try configured audio TTS model, and fall back recursively if necessary
+        models_to_try = [
+            MODEL_REGISTRY["voice_coaching"],   # gemini-3.1-flash-tts-preview
+            "gemini-2.5-flash",
+            "gemini-2.0-flash",
+            MODEL_REGISTRY["vision_evaluation"] # gemini-3.5-flash
+        ]
+        
+        response = None
+        error_msg = ""
+        for model in models_to_try:
+            try:
+                print(f"[TTS API] Requesting speech audio from model {model} in language {lang_name}...")
+                response = client.models.generate_content(
+                    model=model,
+                    contents=prompt,
+                    config=types.GenerateContentConfig(
+                        response_modalities=["AUDIO"],
+                        speech_config=types.SpeechConfig(
+                            voice_config=types.VoiceConfig(
+                                prebuilt_voice_config=types.PrebuiltVoiceConfig(voice_name="Puck")
+                            )
+                        )
+                    )
+                )
+                if response and response.candidates and response.candidates[0].content.parts:
+                    break
+            except Exception as inner_e:
+                print(f"[TTS API] Model {model} failed: {inner_e}")
+                error_msg = str(inner_e)
+                continue
+                
+        if not response:
+            return jsonify({"error": f"Failed to generate speech with any model: {error_msg}"}), 500
+            
+        audio_bytes = b""
+        mime_type = "audio/wav"
+        
+        for part in response.candidates[0].content.parts:
+            if part.inline_data:
+                audio_bytes += part.inline_data.data
+                if part.inline_data.mime_type:
+                    mime_type = part.inline_data.mime_type
+                    
+        if not audio_bytes:
+            return jsonify({"error": "No audio data returned by Gemini"}), 500
+            
+        print(f"[TTS API] Generated {len(audio_bytes)} audio bytes of type {mime_type}")
+        
+        encoded_audio = base64.b64encode(audio_bytes).decode('utf-8')
+        return jsonify({
+            "audio": encoded_audio,
+            "mime_type": mime_type
+        })
+    except Exception as e:
+        import traceback
+        traceback.print_exc()
+        return jsonify({"error": str(e)}), 500
+
+
+@app.route('/api/generate-step-image', methods=['POST'])
+def generate_step_image():
+    """Generates a step illustration image dynamically using gemini-3.1-flash-lite-image or Imagen."""
+    try:
+        data = request.get_json(silent=True) or {}
+        prompt = data.get('prompt', '').strip()
+        step_name = data.get('step_name', 'Step Illustration').strip()
+        
+        if not prompt:
+            prompt = f"An illustration of {step_name}"
+            
+        enriched_prompt = f"A high-quality 2D vector graphic blueprint detailing: {prompt}. Beautiful dark technical style background, clean lines, suitable for vocational visual guidance, glowing cyan and yellow accents."
+        
+        from google import genai
+        from google.genai import types
+        import base64
+        
+        client = genai.Client()
+        
+        image_bytes = None
+        error_msg = ""
+        
+        models_to_try = [
+            MODEL_REGISTRY["banana_generator"], # gemini-3.1-flash-lite-image
+            "imagen-3.0-generate-002",
+            "gemini-2.5-flash-image"
+        ]
+        
+        for model in models_to_try:
+            try:
+                print(f"[Image Gen] Requesting image from model {model}...")
+                response = client.models.generate_images(
+                    model=model,
+                    prompt=enriched_prompt,
+                    config=types.GenerateImagesConfig(
+                        number_of_images=1,
+                        aspect_ratio="4:3"
+                    )
+                )
+                if response and response.generated_images:
+                    image_bytes = response.generated_images[0].image.image_bytes
+                    print(f"[Image Gen] Successfully generated image from {model}!")
+                    break
+            except Exception as e:
+                print(f"[Image Gen] Model {model} failed: {e}")
+                error_msg = str(e)
+                continue
+                
+        if image_bytes:
+            encoded_img = base64.b64encode(image_bytes).decode('utf-8')
+            return jsonify({
+                "image": encoded_img,
+                "mime_type": "image/jpeg"
+            })
+            
+        # Fallback 2: generate_content response if generate_images is unavailable
+        try:
+            print("[Image Gen] Trying generate_content fallback with model...")
+            response = client.models.generate_content(
+                model=MODEL_REGISTRY["banana_generator"],
+                contents=[enriched_prompt],
+                config=types.GenerateContentConfig(
+                    response_modalities=["IMAGE"]
+                )
+            )
+            for part in response.candidates[0].content.parts:
+                if part.inline_data:
+                    image_bytes = part.inline_data.data
+                    encoded_img = base64.b64encode(image_bytes).decode('utf-8')
+                    return jsonify({
+                        "image": encoded_img,
+                        "mime_type": part.inline_data.mime_type or "image/jpeg"
+                    })
+        except Exception as fallback_e:
+            print(f"[Image Gen] Content-fallback failed: {fallback_e}")
+            
+        # Fallback 3: Return blueprint styling signals to let frontend render styled blueprints natively
+        print("[Image Gen] Returning stylized technical blueprint fallback.")
+        return jsonify({
+            "placeholder": True,
+            "prompt": prompt,
+            "message": "Image generation unavailable under active credentials."
+        })
+    except Exception as e:
+        import traceback
+        traceback.print_exc()
+        return jsonify({"error": str(e)}), 500
+
 
 if __name__ == '__main__':
     # Create static & template folders if missing
